@@ -1,6 +1,6 @@
 // this is the same thing as `using namespace` in C++
 use serde_json::json;
-use reqwest::Client;
+use reqwest::{Client, Error};
 use text_io::read;
 
 const USER_DATA_PATH: &str = ".config/config.conf";
@@ -74,7 +74,7 @@ fn read_lines(filename: &str) -> Vec<String> {
   let hours = minutes / 60;
 
   // print to screen
-  println!("{} watched {} episodes making for a total  of {} hours ({} minutes).", username, episodes, hours, minutes);
+  println!("{} watched {} episodes making for a total of {} hours ({} minutes).", username, episodes, hours, minutes);
 }
 
 const QUERY: &str = "
@@ -98,7 +98,10 @@ async fn request(username: String, access_token: String) -> serde_json::Value {
     // Define query and variables
     let json = json!({"query": QUERY, "variables": {"name": username}});
     // Make HTTP post request
-    let resp = client.post("https://graphql.anilist.co/")
+    let resp: Result<String, Error>;
+    if access_token == "none" 
+    {
+      resp = client.post("https://graphql.anilist.co/")
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
                 .body(json.to_string())
@@ -107,6 +110,21 @@ async fn request(username: String, access_token: String) -> serde_json::Value {
                 .unwrap()
                 .text()
                 .await;
+    }
+    else 
+    {
+      resp = client.post("https://graphql.anilist.co/")
+                      .header("Authorization", String::from("Bearer ") + &access_token)
+                      .header("Content-Type", "application/json")
+                      .header("Accept", "application/json")
+                      .body(json.to_string())
+                      .send()
+                      .await
+                      .unwrap()
+                      .text()
+                      .await;
+    }
+   
     // Get json
     let result: serde_json::Value = serde_json::from_str(&resp.unwrap()).unwrap();
     

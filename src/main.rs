@@ -3,23 +3,57 @@ use serde_json::json;
 use reqwest::{Client, Error};
 use text_io::read;
 
-const USER_DATA_PATH: &str = ".config/config.conf";
 
 fn main()
 {
+  // get home path
+  let user_data_folder = std::env::var("HOME").unwrap() + "/.config/anijouhou/";
+  let user_data_path = user_data_folder.clone() + "config.conf";
+
+  // "global" variable
+  let mut verbosity: String = "all".to_string();
+
+  // Check for command line arguments
+  let args: Vec<String> = std::env::args().collect();
+  for i in 0..args.len()
+  {
+    if args[i] == "--delete" || args[i] == "-d"
+    {
+      println!("Deleting user data");
+      std::fs::remove_dir_all(&user_data_folder).expect("Directory should be deleted.");
+    }
+    else if args[i] == "--hours" || args[i] == "-h"
+    {
+      verbosity = "hours".to_string();
+    }
+    else if args[i] == "--episodes" || args[i] == "-e"
+    {
+      verbosity = "episodes".to_string();
+    }
+    else if args[i] == "--minutes" || args[i] == "-m"
+    {
+      verbosity = "minutes".to_string();
+    }
+  }
+
+  // create folder if it doesn't exists
+  if std::path::Path::new(&user_data_folder).exists() == false
+  {
+    std::fs::create_dir(&user_data_folder).expect("Folder should be created");
+  }
+
   // define variables
   let username: String;
   let access_token: String;
 
   // Check for exisiting user-data
-  if std::path::Path::new(USER_DATA_PATH).exists() == true 
+  if std::path::Path::new(&user_data_path).exists() == true 
   {
-    println!("User data exists.");
+    //println!("User data exists.");
     // Read user data
-    let user_data = read_lines(USER_DATA_PATH);
+    let user_data = read_lines(&user_data_path);
     username = user_data[0].clone();
     access_token = user_data[1].clone();
-    println!("Debug: Username: {}, Access_Token: {}", username, access_token);
   }
   else 
   {
@@ -46,20 +80,8 @@ fn main()
 
     let final_output: String = username.clone() + "\n" + &access_token;
     // println!("{}", final_output);
-    std::fs::write(USER_DATA_PATH, final_output).expect("Should write to config file.");
+    std::fs::write(&user_data_path, final_output).expect("Should write to config file.");
   }
-
-println!("Data gathered: Username: {}, Access Token: {}", username, access_token);
-
-fn read_lines(filename: &str) -> Vec<String> {
-  //Taken from https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
-  use std::fs::read_to_string;
-    read_to_string(filename) 
-        .unwrap()  // panic on possible file-reading errors
-        .lines()  // split the string into an iterator of string slices
-        .map(String::from)  // make each slice into a string
-        .collect()  // gather them together into a vector
-}
 
   // send request and 
   let result = request(username, access_token);
@@ -74,7 +96,23 @@ fn read_lines(filename: &str) -> Vec<String> {
   let hours = minutes / 60;
 
   // print to screen
-  println!("{} watched {} episodes making for a total of {} hours ({} minutes).", username, episodes, hours, minutes);
+  if verbosity == "all"
+  {
+    println!("{} watched {} episodes making for a total of {} hours ({} minutes).", username, episodes, hours, minutes);
+  }
+  else if verbosity == "hours"
+  {
+    println!("{}", hours);
+  }
+  else if verbosity == "episodes"
+  {
+    println!("{}", episodes);
+  }
+  else if verbosity == "minutes"
+  {
+    println!("{}", minutes);
+  }
+  
 }
 
 const QUERY: &str = "
@@ -129,4 +167,14 @@ async fn request(username: String, access_token: String) -> serde_json::Value {
     let result: serde_json::Value = serde_json::from_str(&resp.unwrap()).unwrap();
     
     return result;
+}
+
+fn read_lines(filename: &str) -> Vec<String> {
+  //Taken from https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
+  use std::fs::read_to_string;
+    read_to_string(filename) 
+        .unwrap()  // panic on possible file-reading errors
+        .lines()  // split the string into an iterator of string slices
+        .map(String::from)  // make each slice into a string
+        .collect()  // gather them together into a vector
 }

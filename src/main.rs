@@ -102,15 +102,15 @@ fn main()
   }
   else if verbosity == "hours"
   {
-    println!("{}", hours);
+    println!("{} hours", hours);
   }
   else if verbosity == "episodes"
   {
-    println!("{}", episodes);
+    println!("{} episodes", episodes);
   }
   else if verbosity == "minutes"
   {
-    println!("{}", minutes);
+    println!("{} minutes", minutes);
   }
   
 }

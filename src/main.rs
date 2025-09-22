@@ -10,8 +10,16 @@ fn main()
   let user_data_folder = std::env::var("HOME").unwrap() + "/.config/anijouhou/";
   let user_data_path = user_data_folder.clone() + "config.conf";
 
-  // "global" variable
-  let mut verbosity: String = "all".to_string();
+  #[derive(Eq, PartialEq)]
+  enum Verbosity 
+  {
+    All,
+    Hours,
+    Episodes,
+    Minutes,
+  }
+
+  let mut verbosity: Verbosity = Verbosity::All;
 
   // Check for command line arguments
   let args: Vec<String> = std::env::args().collect();
@@ -24,15 +32,15 @@ fn main()
     }
     else if args[i] == "--hours" || args[i] == "-h"
     {
-      verbosity = "hours".to_string();
+      verbosity = Verbosity::Hours
     }
     else if args[i] == "--episodes" || args[i] == "-e"
     {
-      verbosity = "episodes".to_string();
+      verbosity = Verbosity::Episodes;
     }
     else if args[i] == "--minutes" || args[i] == "-m"
     {
-      verbosity = "minutes".to_string();
+      verbosity = Verbosity::Minutes;
     }
   }
 
@@ -96,19 +104,19 @@ fn main()
   let hours = minutes / 60;
 
   // print to screen
-  if verbosity == "all"
+  if verbosity == Verbosity::All
   {
     println!("{} watched {} episodes making for a total of {} hours ({} minutes).", username, episodes, hours, minutes);
   }
-  else if verbosity == "hours"
+  else if verbosity == Verbosity::Hours
   {
     println!("{} hours", hours);
   }
-  else if verbosity == "episodes"
+  else if verbosity == Verbosity::Episodes
   {
     println!("{} episodes", episodes);
   }
-  else if verbosity == "minutes"
+  else if verbosity == Verbosity::Minutes
   {
     println!("{} minutes", minutes);
   }

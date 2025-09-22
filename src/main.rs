@@ -1,4 +1,3 @@
-// this is the same thing as `using namespace` in C++
 use serde_json::json;
 use reqwest::{Client, Error};
 use text_io::read;
@@ -50,14 +49,13 @@ fn main()
     std::fs::create_dir(&user_data_folder).expect("Folder should be created");
   }
 
-  // define variables
+  // declare variables
   let username: String;
   let access_token: String;
 
   // Check for exisiting user-data
   if std::path::Path::new(&user_data_path).exists() == true 
   {
-    //println!("User data exists.");
     // Read user data
     let user_data = read_lines(&user_data_path);
     username = user_data[0].clone();
@@ -68,15 +66,13 @@ fn main()
     // Ask the user if they want to log in
     println!("Do you want to log in?[y|n]");
     let answer: char = read!();
-    if answer == 'y'
+    if answer == 'y' || answer == 'Y'
     {
       // If they do open a browser window with the login url
       open::that("https://anilist.co/api/v2/oauth/authorize?client_id=30455&response_type=token").expect("Should open Browser Window.");
       // Let them enter the data
       println!("Please enter your access token");
       access_token = read!();
-      //Write the data to a string
-      //fs::write(USER_DATA_PATH, &access_token).expect("Should be able to write to `/.config/config.conf`");
     }
     else 
     {
@@ -87,7 +83,6 @@ fn main()
     username = read!();
 
     let final_output: String = username.clone() + "\n" + &access_token;
-    // println!("{}", final_output);
     std::fs::write(&user_data_path, final_output).expect("Should write to config file.");
   }
 

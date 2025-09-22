@@ -1,5 +1,5 @@
 # About
-Terminal application written in Rust that displays the total amount of time spend watching anime by fetching data from anilist.
+Terminal application written in Rust that displays the total amount of time spent watching anime by fetching data from [anilist](https://anilist.co/).
 
 # Screenshot
 <img height="375" alt="anijouhou running in kitty." src="res/anijouhou.png" />

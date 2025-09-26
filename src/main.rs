@@ -1,12 +1,14 @@
 use serde_json::json;
 use reqwest::{Client, Error};
 use text_io::read;
+use chrono::Local;
 
 fn main()
 {
   // get home path
   let user_data_folder = std::env::var("HOME").unwrap() + "/.config/anijouhou/";
   let user_data_path = user_data_folder.clone() + "config.conf";
+  let cache_file: String = std::env::var("HOME").unwrap() + "/.config/anijouhou/" + "cache.conf"; //ToDo: find a better way to store this.
 
   #[derive(Eq, PartialEq)]
   enum Verbosity 
@@ -42,16 +44,30 @@ fn main()
     }
   }
 
-  // ask user for api_key
-  let data = get_api_key(user_data_folder, user_data_path);
+  let mut api_response: serde_json::Value = json!({"error": "0"});
 
-  // send request and save result
-  let result = request(data[0].clone(), data[1].clone());
+  if std::path::Path::new(&cache_file).exists() == true
+  {
+    if read_cache(cache_file.clone()) == "none".to_string()
+    {
+      // go on like before
+      // ask user for api_key
+      let data: Vec<String> = get_api_key(user_data_folder, user_data_path);
+      // send request and save result
+      api_response = request(data[0].clone(), data[1].clone());
+      // save result locally (and only ask again the next day)
+      cache_result(serde_json::to_string_pretty(&api_response).unwrap(), cache_file);
+    }
+    else 
+    {
+      api_response = serde_json::from_str(&*read_cache(cache_file.clone())).expect("Couldn't read api response from cache.");
+    }
+  }
 
   // parse json
-  let minutes = result["data"]["User"]["statistics"]["anime"]["minutesWatched"].as_i64().unwrap(); //or as_f64 if I wanted a float.
-  let episodes = result["data"]["User"]["statistics"]["anime"]["episodesWatched"].as_i64().unwrap(); //or as_f64 if I wanted a float.
-  let username = result["data"]["User"]["name"].to_string();
+  let minutes = api_response["data"]["User"]["statistics"]["anime"]["minutesWatched"].as_i64().unwrap(); //or as_f64 if I wanted a float.
+  let episodes = api_response["data"]["User"]["statistics"]["anime"]["episodesWatched"].as_i64().unwrap(); //or as_f64 if I wanted a float.
+  let username = api_response["data"]["User"]["name"].to_string();
   let username = username.replace('"', ""); //remove " from string
 
   // perform calculation
@@ -179,6 +195,41 @@ async fn request(username: String, access_token: String) -> serde_json::Value {
     return result;
 }
 
+fn read_cache(cache_file: String) -> String
+{
+  let mut cache_content: String = Default::default();
+  // save data in variable
+  let cache = read_lines(&cache_file);
+  // check the first line
+  if cache[0] == Local::now().date_naive().to_string() 
+  {
+    //println!("File has been created today.");
+    for i in 1..cache.len()
+    {
+      cache_content += &cache[i];
+    }
+  }
+  else 
+  {
+    cache_content = "none".to_string(); //ToDo: Find a more efficient way of doing this.
+  }
+  return cache_content;
+}
+
+
+fn cache_result(result: String, cache_file: String)
+{
+  // check cache
+  
+  // --write cache--
+  // write current data to cache
+  let today = Local::now().date_naive().to_string();
+  // write result to file
+  std::fs::write(cache_file, today + "\n" + &result).expect("Could not write api response to cache.")
+}
+
+
+// helper functions
 fn read_lines(filename: &str) -> Vec<String> {
   //Taken from https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
   use std::fs::read_to_string;

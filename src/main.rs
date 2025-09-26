@@ -2,7 +2,6 @@ use serde_json::json;
 use reqwest::{Client, Error};
 use text_io::read;
 
-
 fn main()
 {
   // get home path
@@ -43,6 +42,43 @@ fn main()
     }
   }
 
+  // ask user for api_key
+  let data = get_api_key(user_data_folder, user_data_path);
+
+  // send request and save result
+  let result = request(data[0].clone(), data[1].clone());
+
+  // parse json
+  let minutes = result["data"]["User"]["statistics"]["anime"]["minutesWatched"].as_i64().unwrap(); //or as_f64 if I wanted a float.
+  let episodes = result["data"]["User"]["statistics"]["anime"]["episodesWatched"].as_i64().unwrap(); //or as_f64 if I wanted a float.
+  let username = result["data"]["User"]["name"].to_string();
+  let username = username.replace('"', ""); //remove " from string
+
+  // perform calculation
+  let hours = minutes / 60;
+
+  // print to screen
+  if verbosity == Verbosity::All
+  {
+    println!("{} watched {} episodes making for a total of {} hours ({} minutes).", username, episodes, hours, minutes);
+  }
+  else if verbosity == Verbosity::Hours
+  {
+    println!("{} hours", hours);
+  }
+  else if verbosity == Verbosity::Episodes
+  {
+    println!("{} episodes", episodes);
+  }
+  else if verbosity == Verbosity::Minutes
+  {
+    println!("{} minutes", minutes);
+  }
+  
+}
+
+fn get_api_key(user_data_folder: String, user_data_path: String) -> Vec<String>
+{
   // create folder if it doesn't exists
   if std::path::Path::new(&user_data_folder).exists() == false
   {
@@ -85,37 +121,8 @@ fn main()
     let final_output: String = username.clone() + "\n" + &access_token;
     std::fs::write(&user_data_path, final_output).expect("Should write to config file.");
   }
-
-  // send request and 
-  let result = request(username, access_token);
-
-  // parse json
-  let minutes = result["data"]["User"]["statistics"]["anime"]["minutesWatched"].as_i64().unwrap(); //or as_f64 if I wanted a float.
-  let episodes = result["data"]["User"]["statistics"]["anime"]["episodesWatched"].as_i64().unwrap(); //or as_f64 if I wanted a float.
-  let username = result["data"]["User"]["name"].to_string();
-  let username = username.replace('"', ""); //remove " from string
-
-  // perform calculation
-  let hours = minutes / 60;
-
-  // print to screen
-  if verbosity == Verbosity::All
-  {
-    println!("{} watched {} episodes making for a total of {} hours ({} minutes).", username, episodes, hours, minutes);
-  }
-  else if verbosity == Verbosity::Hours
-  {
-    println!("{} hours", hours);
-  }
-  else if verbosity == Verbosity::Episodes
-  {
-    println!("{} episodes", episodes);
-  }
-  else if verbosity == Verbosity::Minutes
-  {
-    println!("{} minutes", minutes);
-  }
-  
+  let data = vec![username, access_token]; //ToDo: This "clone" can probably be removed.
+  return data;
 }
 
 const QUERY: &str = "

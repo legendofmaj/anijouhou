@@ -8,7 +8,8 @@ Terminal application written in Rust that displays the total amount of time spen
 
 # Usage
 - Basic usage: `anijouhou`
-- Delete user data directory: `anijouhou -d` or `anijouhou --delete`
+- Clear cache(automically cleared daily): `anijouhou -c` or `anijouhou --clear-cache`
+- Delete user data directory(`$HOME/.config/anijouhou`): `anijouhou -d` or `anijouhou --delete`
 - Get only total watchtime hours: `anijouhou -h` or `anijouhou --hours`
 - Get only total watchtime in minutes: `anijouhou -m` or `anijouhou --minutes`
 - Get only total amount of episodes watched: `anijouhou -e` or `anijouhou --episodes`
@@ -32,4 +33,14 @@ cargo build --release
 Copy the binary to your bin directory
 ```
 sudo cp target/release/anijouhou /usr/bin/
+```
+
+# Tips and tricks
+## Use anijouhou in fastfetch
+Simply add the following to your `~/.config/fastfetch/config.jsonc`
+```jsonc 
+{
+  "type": "command",
+  "text": "anijouhou -h" // or any other flag you want
+}
 ```

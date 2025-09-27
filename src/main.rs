@@ -28,7 +28,14 @@ fn main()
     if args[i] == "--delete" || args[i] == "-d"
     {
       println!("Deleting user data");
-      std::fs::remove_dir_all(&user_data_folder).expect("Directory should be deleted.");
+      std::fs::remove_dir_all(&user_data_folder).expect("anijouhou config directory cannot be deleted.");
+      std::process::exit(1);
+    }
+    else if args[i] == "--clear-cache" || args[i] == "-c"
+    {
+      println!("Clearing cache");
+      std::fs::remove_file(cache_file.clone()).expect("Cache directory cannot be deleted.");
+      std::process::exit(1);
     }
     else if args[i] == "--hours" || args[i] == "-h"
     {
@@ -44,24 +51,25 @@ fn main()
     }
   }
 
-  let mut api_response: serde_json::Value = json!({"error": "0"});
+  let api_response: serde_json::Value;
 
   if std::path::Path::new(&cache_file).exists() == true
   {
-    if read_cache(cache_file.clone()) == "none".to_string()
+    //println!("File exists");
+    let file_size = std::fs::metadata(cache_file.clone()).unwrap().len();
+    //println!("{}", file_size);
+    if file_size == 0 // check if file is empty
     {
-      // go on like before
-      // ask user for api_key
-      let data: Vec<String> = get_api_key(user_data_folder, user_data_path);
-      // send request and save result
-      api_response = request(data[0].clone(), data[1].clone());
-      // save result locally (and only ask again the next day)
-      cache_result(serde_json::to_string_pretty(&api_response).unwrap(), cache_file);
+      api_response = save_user_information(user_data_folder, user_data_path, cache_file);
     }
     else 
     {
       api_response = serde_json::from_str(&*read_cache(cache_file.clone())).expect("Couldn't read api response from cache.");
     }
+  }
+  else 
+  {
+    api_response = save_user_information(user_data_folder, user_data_path, cache_file);
   }
 
   // parse json
@@ -209,23 +217,29 @@ fn read_cache(cache_file: String) -> String
       cache_content += &cache[i];
     }
   }
-  else 
-  {
-    cache_content = "none".to_string(); //ToDo: Find a more efficient way of doing this.
-  }
   return cache_content;
 }
 
 
 fn cache_result(result: String, cache_file: String)
 {
-  // check cache
-  
   // --write cache--
   // write current data to cache
   let today = Local::now().date_naive().to_string();
   // write result to file
   std::fs::write(cache_file, today + "\n" + &result).expect("Could not write api response to cache.")
+}
+
+fn save_user_information(user_data_folder: String, user_data_path: String, cache_file: String) -> serde_json::Value
+{
+  // go on like before
+  // ask user for api_key
+  let data: Vec<String> = get_api_key(user_data_folder, user_data_path);
+  // send request and save result
+  let api_response = request(data[0].clone(), data[1].clone());
+  // save result locally (and only ask again the next day)
+  cache_result(serde_json::to_string_pretty(&api_response).unwrap(), cache_file);
+  return api_response;
 }
 
 

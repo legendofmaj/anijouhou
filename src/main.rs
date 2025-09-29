@@ -121,7 +121,7 @@ fn save_user_information(user_data_folder: String, user_data_path: String, cache
   {
     println!("The data for this user is not available publicly. Have your set your anilist account to private?");
     println!("Is {} the correct spelling of your username?", data[0]);
-    print!("Userdata will not be saved.");
+    print!("User data will not be saved.");
     // User data should not be saved.
     std::fs::remove_dir_all(user_data_folder).expect("anijouhou config directory cannot be deleted.");
     std::process::exit(404);
@@ -150,8 +150,6 @@ fn get_api_key(user_data_folder: String, user_data_path: String, mut username: S
   else 
   {
     // Ask the user for their username
-    // This is a bit confusing naming. In this case "none" means it is not yet defined, while "skip" it should not be set.
-    // However the if condition behind "none" then gives the api_key a value, while "skip" changes it to none.
     if username == "none"
     {
       println!("Please enter your username.");
@@ -176,15 +174,11 @@ fn get_api_key(user_data_folder: String, user_data_path: String, mut username: S
         api_key = "skip".to_string();
       }
     }
-    // else if api_key == "skip"
-    // {
-    //   api_key = "none".to_string();
-    // }
 
     let final_output: String = username.clone() + "\n" + &api_key;
     std::fs::write(&user_data_path, final_output).expect("Should write to config file.");
   }
-  let data = vec![username, api_key]; //ToDo: This "clone" can probably be removed.
+  let data = vec![username, api_key];
   return data;
 }
 
@@ -243,7 +237,6 @@ async fn request(username: String, access_token: String) -> serde_json::Value {
 
 fn write_cache(result: String, cache_file: String)
 {
-  // --write cache--
   // write current data to cache
   let today = Local::now().date_naive().to_string();
   // write result to file

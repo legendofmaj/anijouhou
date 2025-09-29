@@ -18,6 +18,8 @@ Terminal application written in Rust that displays the total amount of time spen
 ## Supplying user data via command line arguments
 - Give username via command line argument: `anijouhou -u <your-username>` or `anijouhou --username <your-username>`
 - Give api-key via command line argument: `anijouhou -k <api-key>` or `anijouhou --api-key <api-key>`
+>[!Tip]
+> If you give `skip` as the api-key, none will be used.
 
 # Installation
 Download the latest release from the [release page](https://github.com/legendofmaj/anijouhou/releases) <br>

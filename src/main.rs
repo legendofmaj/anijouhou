@@ -143,8 +143,13 @@ fn get_api_key(user_data_folder: String, user_data_path: String) -> Vec<String>
   }
   else 
   {
+    // ask the user for their username
+    println!("Please enter your username.");
+    username = read!();
+
     // Ask the user if they want to log in
     println!("Do you want to log in?[y|n]");
+    println!("If your account is set to private this is required.");
     let answer: char = read!();
     if answer == 'y' || answer == 'Y'
     {
@@ -158,9 +163,6 @@ fn get_api_key(user_data_folder: String, user_data_path: String) -> Vec<String>
     {
       access_token = "none".to_string();
     }
-
-    println!("Please enter your username.");
-    username = read!();
 
     let final_output: String = username.clone() + "\n" + &access_token;
     std::fs::write(&user_data_path, final_output).expect("Should write to config file.");

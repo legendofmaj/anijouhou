@@ -69,5 +69,6 @@ else
 fi
 ```
 ## Use anijouhou on Android via Termux
-You will need to install the `openssl` package via `pkg install openssl`. <br>
-Other than that you can follow the instructions found in [Build from source](#build-from-source).
+- Install the `openssl` package via `pkg install openssl`
+- Follow the instructions in [Build from source](#build-from-source) to build an executable
+- Move the executable to your binary directory `mv /data/data/com.termux/files/usr/bin/`

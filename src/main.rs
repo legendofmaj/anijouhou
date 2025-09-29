@@ -20,6 +20,8 @@ fn main()
   }
 
   let mut verbosity: Verbosity = Verbosity::All;
+  let mut username: String  = "none".to_string();
+  // let mut api_key: String = "none".to_string();
 
   // Check for command line arguments
   let args: Vec<String> = std::env::args().collect();
@@ -49,7 +51,20 @@ fn main()
     {
       verbosity = Verbosity::Minutes;
     }
+    else if args[i] == "-u" || args[i] == "--username"
+    {
+      username = args[i+1].clone();
+    }
+    // else if args[i] == "-k" || args[i] == "--api-key"
+    // {
+    //   // You can write anijouhou -k skip
+    //   if args[i+1] != "skip" || args[i+1] != "none"
+    //   {api_key = args[i+1].clone();}
+    //   else {println!("skipping");} //ToDo: Remove
+    // }
   }
+
+  // println!("api key is {}", api_key);
 
   // get api response
   let api_response: serde_json::Value;
@@ -59,7 +74,7 @@ fn main()
     let file_size = std::fs::metadata(cache_file.clone()).unwrap().len();
     if file_size == 0 // check if file is empty
     {
-      api_response = save_user_information(user_data_folder, user_data_path, cache_file);
+      api_response = save_user_information(user_data_folder, user_data_path, cache_file, username);
     }
     else 
     {
@@ -68,7 +83,7 @@ fn main()
   }
   else 
   {
-    api_response = save_user_information(user_data_folder, user_data_path, cache_file);
+    api_response = save_user_information(user_data_folder, user_data_path, cache_file, username);
   }
 
   // parse json
@@ -100,10 +115,10 @@ fn main()
   
 }
 
-fn save_user_information(user_data_folder: String, user_data_path: String, cache_file: String) -> serde_json::Value
+fn save_user_information(user_data_folder: String, user_data_path: String, cache_file: String, username: String) -> serde_json::Value
 {
   // ask user for api_key
-  let data: Vec<String> = get_api_key(user_data_folder.clone(), user_data_path);
+  let data: Vec<String> = get_api_key(user_data_folder.clone(), user_data_path, username);
   // send request and save result
   let api_response = request(data[0].clone(), data[1].clone());
   // check if the api response contains errors.
@@ -121,7 +136,7 @@ fn save_user_information(user_data_folder: String, user_data_path: String, cache
   return api_response;
 }
 
-fn get_api_key(user_data_folder: String, user_data_path: String) -> Vec<String>
+fn get_api_key(user_data_folder: String, user_data_path: String, mut username: String) -> Vec<String>
 {
   // create folder if it doesn't exists
   if std::path::Path::new(&user_data_folder).exists() == false
@@ -130,7 +145,7 @@ fn get_api_key(user_data_folder: String, user_data_path: String) -> Vec<String>
   }
 
   // declare variables
-  let username: String;
+  //let username: String;
   let access_token: String;
 
   // Check for exisiting user-data
@@ -143,10 +158,12 @@ fn get_api_key(user_data_folder: String, user_data_path: String) -> Vec<String>
   }
   else 
   {
-    // ask the user for their username
-    println!("Please enter your username.");
-    username = read!();
-
+    // Ask the user for their username
+    if username == "none"
+    {
+      println!("Please enter your username.");
+      username = read!();
+    }
     // Ask the user if they want to log in
     println!("Do you want to log in?[y|n]");
     println!("If your account is set to private this is required.");
@@ -155,7 +172,7 @@ fn get_api_key(user_data_folder: String, user_data_path: String) -> Vec<String>
     {
       // If they do open a browser window with the login url
       open::that("https://anilist.co/api/v2/oauth/authorize?client_id=30455&response_type=token").expect("Should open Browser Window.");
-      // Let them enter the data
+      // Let them enter their data
       println!("Please enter your access token");
       access_token = read!();
     }

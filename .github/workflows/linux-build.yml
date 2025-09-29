@@ -11,6 +11,7 @@ on:
     branches: ['main']
     paths-ignore:
       - '**.md'
+      - '**.png'
       - '.gitignore'
   workflow_dispatch:
 

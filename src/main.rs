@@ -20,6 +20,8 @@ fn main()
   }
 
   let mut verbosity: Verbosity = Verbosity::All;
+  let mut username: String  = "none".to_string();
+  let mut api_key: String = "none".to_string();
 
   // Check for command line arguments
   let args: Vec<String> = std::env::args().collect();
@@ -49,6 +51,14 @@ fn main()
     {
       verbosity = Verbosity::Minutes;
     }
+    else if args[i] == "-u" || args[i] == "--username"
+    {
+      username = args[i+1].clone();
+    }
+    else if args[i] == "-k" || args[i] == "--api-key"
+    {
+      api_key = args[i+1].clone();
+    }
   }
 
   // get api response
@@ -59,7 +69,7 @@ fn main()
     let file_size = std::fs::metadata(cache_file.clone()).unwrap().len();
     if file_size == 0 // check if file is empty
     {
-      api_response = save_user_information(user_data_folder, user_data_path, cache_file);
+      api_response = save_user_information(user_data_folder, user_data_path, cache_file, username, api_key);
     }
     else 
     {
@@ -68,7 +78,7 @@ fn main()
   }
   else 
   {
-    api_response = save_user_information(user_data_folder, user_data_path, cache_file);
+    api_response = save_user_information(user_data_folder, user_data_path, cache_file, username, api_key);
   }
 
   // parse json
@@ -100,10 +110,10 @@ fn main()
   
 }
 
-fn save_user_information(user_data_folder: String, user_data_path: String, cache_file: String) -> serde_json::Value
+fn save_user_information(user_data_folder: String, user_data_path: String, cache_file: String, username: String, api_key: String) -> serde_json::Value
 {
   // ask user for api_key
-  let data: Vec<String> = get_api_key(user_data_folder.clone(), user_data_path);
+  let data: Vec<String> = get_api_key(user_data_folder.clone(), user_data_path, username, api_key);
   // send request and save result
   let api_response = request(data[0].clone(), data[1].clone());
   // check if the api response contains errors.
@@ -111,7 +121,7 @@ fn save_user_information(user_data_folder: String, user_data_path: String, cache
   {
     println!("The data for this user is not available publicly. Have your set your anilist account to private?");
     println!("Is {} the correct spelling of your username?", data[0]);
-    print!("Userdata will not be saved.");
+    print!("User data will not be saved.");
     // User data should not be saved.
     std::fs::remove_dir_all(user_data_folder).expect("anijouhou config directory cannot be deleted.");
     std::process::exit(404);
@@ -121,7 +131,7 @@ fn save_user_information(user_data_folder: String, user_data_path: String, cache
   return api_response;
 }
 
-fn get_api_key(user_data_folder: String, user_data_path: String) -> Vec<String>
+fn get_api_key(user_data_folder: String, user_data_path: String, mut username: String, mut api_key: String) -> Vec<String>
 {
   // create folder if it doesn't exists
   if std::path::Path::new(&user_data_folder).exists() == false
@@ -129,45 +139,46 @@ fn get_api_key(user_data_folder: String, user_data_path: String) -> Vec<String>
     std::fs::create_dir(&user_data_folder).expect("Folder should be created");
   }
 
-  // declare variables
-  let username: String;
-  let access_token: String;
-
   // Check for exisiting user-data
   if std::path::Path::new(&user_data_path).exists() == true 
   {
     // Read user data
     let user_data = read_lines(&user_data_path);
     username = user_data[0].clone();
-    access_token = user_data[1].clone();
+    api_key = user_data[1].clone();
   }
   else 
   {
-    // ask the user for their username
-    println!("Please enter your username.");
-    username = read!();
-
+    // Ask the user for their username
+    if username == "none"
+    {
+      println!("Please enter your username.");
+      username = read!();
+    }
     // Ask the user if they want to log in
-    println!("Do you want to log in?[y|n]");
-    println!("If your account is set to private this is required.");
-    let answer: char = read!();
-    if answer == 'y' || answer == 'Y'
+    if api_key == "none"
     {
-      // If they do open a browser window with the login url
-      open::that("https://anilist.co/api/v2/oauth/authorize?client_id=30455&response_type=token").expect("Should open Browser Window.");
-      // Let them enter the data
-      println!("Please enter your access token");
-      access_token = read!();
-    }
-    else 
-    {
-      access_token = "none".to_string();
+      println!("Do you want to log in?[y|n]");
+      println!("If your account is set to private this is required.");
+      let answer: char = read!();
+      if answer == 'y' || answer == 'Y'
+      {
+        // If they do open a browser window with the login url
+        open::that("https://anilist.co/api/v2/oauth/authorize?client_id=30455&response_type=token").expect("Should open Browser Window.");
+        // Let them enter their data
+        println!("Please enter your access token");
+        api_key = read!();
+      }
+      else 
+      {
+        api_key = "skip".to_string();
+      }
     }
 
-    let final_output: String = username.clone() + "\n" + &access_token;
+    let final_output: String = username.clone() + "\n" + &api_key;
     std::fs::write(&user_data_path, final_output).expect("Should write to config file.");
   }
-  let data = vec![username, access_token]; //ToDo: This "clone" can probably be removed.
+  let data = vec![username, api_key];
   return data;
 }
 
@@ -193,7 +204,7 @@ async fn request(username: String, access_token: String) -> serde_json::Value {
     let json = json!({"query": QUERY, "variables": {"name": username}});
     // Make HTTP post request
     let resp: Result<String, Error>;
-    if access_token == "none"
+    if access_token == "skip"
     {
       resp = client.post("https://graphql.anilist.co/")
                 .header("Content-Type", "application/json")
@@ -226,7 +237,6 @@ async fn request(username: String, access_token: String) -> serde_json::Value {
 
 fn write_cache(result: String, cache_file: String)
 {
-  // --write cache--
   // write current data to cache
   let today = Local::now().date_naive().to_string();
   // write result to file

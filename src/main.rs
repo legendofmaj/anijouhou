@@ -21,7 +21,7 @@ fn main()
 
   let mut verbosity: Verbosity = Verbosity::All;
   let mut username: String  = "none".to_string();
-  // let mut api_key: String = "none".to_string();
+  let mut api_key: String = "none".to_string();
 
   // Check for command line arguments
   let args: Vec<String> = std::env::args().collect();
@@ -55,16 +55,11 @@ fn main()
     {
       username = args[i+1].clone();
     }
-    // else if args[i] == "-k" || args[i] == "--api-key"
-    // {
-    //   // You can write anijouhou -k skip
-    //   if args[i+1] != "skip" || args[i+1] != "none"
-    //   {api_key = args[i+1].clone();}
-    //   else {println!("skipping");} //ToDo: Remove
-    // }
+    else if args[i] == "-k" || args[i] == "--api-key"
+    {
+      api_key = args[i+1].clone();
+    }
   }
-
-  // println!("api key is {}", api_key);
 
   // get api response
   let api_response: serde_json::Value;
@@ -74,7 +69,7 @@ fn main()
     let file_size = std::fs::metadata(cache_file.clone()).unwrap().len();
     if file_size == 0 // check if file is empty
     {
-      api_response = save_user_information(user_data_folder, user_data_path, cache_file, username);
+      api_response = save_user_information(user_data_folder, user_data_path, cache_file, username, api_key);
     }
     else 
     {
@@ -83,7 +78,7 @@ fn main()
   }
   else 
   {
-    api_response = save_user_information(user_data_folder, user_data_path, cache_file, username);
+    api_response = save_user_information(user_data_folder, user_data_path, cache_file, username, api_key);
   }
 
   // parse json
@@ -115,10 +110,10 @@ fn main()
   
 }
 
-fn save_user_information(user_data_folder: String, user_data_path: String, cache_file: String, username: String) -> serde_json::Value
+fn save_user_information(user_data_folder: String, user_data_path: String, cache_file: String, username: String, api_key: String) -> serde_json::Value
 {
   // ask user for api_key
-  let data: Vec<String> = get_api_key(user_data_folder.clone(), user_data_path, username);
+  let data: Vec<String> = get_api_key(user_data_folder.clone(), user_data_path, username, api_key);
   // send request and save result
   let api_response = request(data[0].clone(), data[1].clone());
   // check if the api response contains errors.
@@ -136,7 +131,7 @@ fn save_user_information(user_data_folder: String, user_data_path: String, cache
   return api_response;
 }
 
-fn get_api_key(user_data_folder: String, user_data_path: String, mut username: String) -> Vec<String>
+fn get_api_key(user_data_folder: String, user_data_path: String, mut username: String, mut api_key: String) -> Vec<String>
 {
   // create folder if it doesn't exists
   if std::path::Path::new(&user_data_folder).exists() == false
@@ -144,47 +139,52 @@ fn get_api_key(user_data_folder: String, user_data_path: String, mut username: S
     std::fs::create_dir(&user_data_folder).expect("Folder should be created");
   }
 
-  // declare variables
-  //let username: String;
-  let access_token: String;
-
   // Check for exisiting user-data
   if std::path::Path::new(&user_data_path).exists() == true 
   {
     // Read user data
     let user_data = read_lines(&user_data_path);
     username = user_data[0].clone();
-    access_token = user_data[1].clone();
+    api_key = user_data[1].clone();
   }
   else 
   {
     // Ask the user for their username
+    // This is a bit confusing naming. In this case "none" means it is not yet defined, while "skip" it should not be set.
+    // However the if condition behind "none" then gives the api_key a value, while "skip" changes it to none.
     if username == "none"
     {
       println!("Please enter your username.");
       username = read!();
     }
     // Ask the user if they want to log in
-    println!("Do you want to log in?[y|n]");
-    println!("If your account is set to private this is required.");
-    let answer: char = read!();
-    if answer == 'y' || answer == 'Y'
+    if api_key == "none"
     {
-      // If they do open a browser window with the login url
-      open::that("https://anilist.co/api/v2/oauth/authorize?client_id=30455&response_type=token").expect("Should open Browser Window.");
-      // Let them enter their data
-      println!("Please enter your access token");
-      access_token = read!();
+      println!("Do you want to log in?[y|n]");
+      println!("If your account is set to private this is required.");
+      let answer: char = read!();
+      if answer == 'y' || answer == 'Y'
+      {
+        // If they do open a browser window with the login url
+        open::that("https://anilist.co/api/v2/oauth/authorize?client_id=30455&response_type=token").expect("Should open Browser Window.");
+        // Let them enter their data
+        println!("Please enter your access token");
+        api_key = read!();
+      }
+      else 
+      {
+        api_key = "skip".to_string();
+      }
     }
-    else 
-    {
-      access_token = "none".to_string();
-    }
+    // else if api_key == "skip"
+    // {
+    //   api_key = "none".to_string();
+    // }
 
-    let final_output: String = username.clone() + "\n" + &access_token;
+    let final_output: String = username.clone() + "\n" + &api_key;
     std::fs::write(&user_data_path, final_output).expect("Should write to config file.");
   }
-  let data = vec![username, access_token]; //ToDo: This "clone" can probably be removed.
+  let data = vec![username, api_key]; //ToDo: This "clone" can probably be removed.
   return data;
 }
 
@@ -210,7 +210,7 @@ async fn request(username: String, access_token: String) -> serde_json::Value {
     let json = json!({"query": QUERY, "variables": {"name": username}});
     // Make HTTP post request
     let resp: Result<String, Error>;
-    if access_token == "none"
+    if access_token == "skip"
     {
       resp = client.post("https://graphql.anilist.co/")
                 .header("Content-Type", "application/json")

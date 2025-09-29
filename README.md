@@ -53,7 +53,7 @@ Simply add the following to your `~/.config/fastfetch/config.jsonc`
 ```
 ## Switch between accounts
 `anijouhou` does not directly provide a way to switch between anilist accounts. However you can write a shell script like the one below to get this functionality. <br>
-See [here](scripts/README.md) for additional information on the script below.
+See [here](scripts/) for additional information on the script below.
 ```bash
 #!/bin/bash
 # In this example user1 requires an api-key, while user2 does not.
@@ -68,3 +68,6 @@ else
   anijouhou -u "$1" -k skip
 fi
 ```
+## Use anijouhou on Android via Termux
+You will need to install the `openssl` package via `pkg install openssl`. <br>
+Other than that you can follow the instructions found in [Build from source](#build-from-source).

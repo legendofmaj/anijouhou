@@ -171,7 +171,7 @@ async fn request(username: String, access_token: String) -> serde_json::Value {
     let json = json!({"query": QUERY, "variables": {"name": username}});
     // Make HTTP post request
     let resp: Result<String, Error>;
-    if access_token == "none" 
+    if access_token == "none"
     {
       resp = client.post("https://graphql.anilist.co/")
                 .header("Content-Type", "application/json")
@@ -196,10 +196,21 @@ async fn request(username: String, access_token: String) -> serde_json::Value {
                       .text()
                       .await;
     }
-   
+
     // Get json
     let result: serde_json::Value = serde_json::from_str(&resp.unwrap()).unwrap();
-    
+
+    // check if the api response contains errors. ToDo: maybe do this somewhere else?
+    if result["data"]["User"].to_string() == "null"
+    {
+      println!("The data for this user is not available publicly. Have your set your anilist account to private?");
+      println!("Is {} the correct spelling of your username?", username);
+      print!("Userdata will not be saved.");
+      // User data should not be saved.
+      std::fs::remove_dir_all(std::env::var("HOME").unwrap() + "/.config/anijouhou/").expect("anijouhou config directory cannot be deleted.");
+      std::process::exit(404);
+    }
+
     return result;
 }
 
@@ -219,7 +230,6 @@ fn read_cache(cache_file: String) -> String
   }
   return cache_content;
 }
-
 
 fn cache_result(result: String, cache_file: String)
 {

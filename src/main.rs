@@ -8,7 +8,7 @@ fn main()
   // get home path
   let user_data_folder = std::env::var("HOME").unwrap() + "/.config/anijouhou/";
   let user_data_path = user_data_folder.clone() + "config.conf";
-  let cache_file: String = std::env::var("HOME").unwrap() + "/.config/anijouhou/" + "cache.conf"; //ToDo: find a better way to store this.
+  let cache_file: String = std::env::var("HOME").unwrap() + "/.config/anijouhou/" + "cache.conf";
 
   #[derive(Eq, PartialEq)]
   enum Verbosity 
@@ -51,13 +51,12 @@ fn main()
     }
   }
 
+  // get api response
   let api_response: serde_json::Value;
-
+  
   if std::path::Path::new(&cache_file).exists() == true
   {
-    //println!("File exists");
     let file_size = std::fs::metadata(cache_file.clone()).unwrap().len();
-    //println!("{}", file_size);
     if file_size == 0 // check if file is empty
     {
       api_response = save_user_information(user_data_folder, user_data_path, cache_file);
@@ -99,6 +98,27 @@ fn main()
     println!("{} minutes", minutes);
   }
   
+}
+
+fn save_user_information(user_data_folder: String, user_data_path: String, cache_file: String) -> serde_json::Value
+{
+  // ask user for api_key
+  let data: Vec<String> = get_api_key(user_data_folder.clone(), user_data_path);
+  // send request and save result
+  let api_response = request(data[0].clone(), data[1].clone());
+  // check if the api response contains errors.
+  if api_response["data"]["User"].to_string() == "null"
+  {
+    println!("The data for this user is not available publicly. Have your set your anilist account to private?");
+    println!("Is {} the correct spelling of your username?", data[0]);
+    print!("Userdata will not be saved.");
+    // User data should not be saved.
+    std::fs::remove_dir_all(user_data_folder).expect("anijouhou config directory cannot be deleted.");
+    std::process::exit(404);
+  }
+  // save result locally
+  write_cache(serde_json::to_string_pretty(&api_response).unwrap(), cache_file);
+  return api_response;
 }
 
 fn get_api_key(user_data_folder: String, user_data_path: String) -> Vec<String>
@@ -199,19 +219,16 @@ async fn request(username: String, access_token: String) -> serde_json::Value {
 
     // Get json
     let result: serde_json::Value = serde_json::from_str(&resp.unwrap()).unwrap();
-
-    // check if the api response contains errors. ToDo: maybe do this somewhere else?
-    if result["data"]["User"].to_string() == "null"
-    {
-      println!("The data for this user is not available publicly. Have your set your anilist account to private?");
-      println!("Is {} the correct spelling of your username?", username);
-      print!("Userdata will not be saved.");
-      // User data should not be saved.
-      std::fs::remove_dir_all(std::env::var("HOME").unwrap() + "/.config/anijouhou/").expect("anijouhou config directory cannot be deleted.");
-      std::process::exit(404);
-    }
-
     return result;
+}
+
+fn write_cache(result: String, cache_file: String)
+{
+  // --write cache--
+  // write current data to cache
+  let today = Local::now().date_naive().to_string();
+  // write result to file
+  std::fs::write(cache_file, today + "\n" + &result).expect("Could not write api response to cache.")
 }
 
 fn read_cache(cache_file: String) -> String
@@ -230,28 +247,6 @@ fn read_cache(cache_file: String) -> String
   }
   return cache_content;
 }
-
-fn cache_result(result: String, cache_file: String)
-{
-  // --write cache--
-  // write current data to cache
-  let today = Local::now().date_naive().to_string();
-  // write result to file
-  std::fs::write(cache_file, today + "\n" + &result).expect("Could not write api response to cache.")
-}
-
-fn save_user_information(user_data_folder: String, user_data_path: String, cache_file: String) -> serde_json::Value
-{
-  // go on like before
-  // ask user for api_key
-  let data: Vec<String> = get_api_key(user_data_folder, user_data_path);
-  // send request and save result
-  let api_response = request(data[0].clone(), data[1].clone());
-  // save result locally (and only ask again the next day)
-  cache_result(serde_json::to_string_pretty(&api_response).unwrap(), cache_file);
-  return api_response;
-}
-
 
 // helper functions
 fn read_lines(filename: &str) -> Vec<String> {

@@ -22,25 +22,25 @@ Terminal application written in Rust that displays the total amount of time spen
 > If you give `skip` as the api key, none will be used.
 
 # Installation
-Download the latest release from the [release page](https://github.com/legendofmaj/anijouhou/releases) or to get the latest development version download it from [GitHub actions](https://github.com/legendofmaj/anijouhou/actions) <br>
+Download the latest release from the [release page](https://github.com/legendofmaj/anijouhou/releases) or to get the latest development version download it from [GitHub actions](https://github.com/legendofmaj/anijouhou/actions) <br> <br>
 Copy the binary to your bin directory
-```
+```bash
 cp anijouhou $HOME/.cargo/bin/
 ```
 >[!Note]
-> Note that this requires cargo to be installed. You can also copy it `/usr/bin/`
+> Note that this requires cargo to be installed. You can also copy it to `/usr/bin/`.
 
 # Build from source
 Clone the repository and go into the directory
-```
+```bash
 git clone https://github.com/legendofmaj/anijouhou.git && cd anijouhou
 ```
 Build the project
-```
+```bash
 cargo build --release
 ```
 Copy the binary to your bin directory
-```
+```bash
 cp target/release/anijouhou $HOME/.cargo/bin/
 ```
 
@@ -71,6 +71,12 @@ else
 fi
 ```
 ## Use anijouhou on Android via Termux
-- Install the `openssl` package via `pkg install openssl`
-- Follow the instructions in [Build from source](#build-from-source) to build an executable
-- Move the executable to your binary directory `mv target/release/anijouhou /data/data/com.termux/files/usr/bin/`
+Install the `openssl` package
+```bash
+pkg install openssl
+```
+Follow the instructions in [Build from source](#build-from-source) to build an executable <br>
+Move the executable to your binary directory
+```bash
+mv target/release/anijouhou /data/data/com.termux/files/usr/bin/
+```

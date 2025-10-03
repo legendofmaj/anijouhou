@@ -2,6 +2,7 @@ use serde_json::json;
 use reqwest::{Client, Error};
 use text_io::read;
 use chrono::Local;
+use std::thread;
 
 fn main()
 {
@@ -164,14 +165,21 @@ fn get_api_key(user_data_folder: String, user_data_path: String, mut username: S
       if answer == 'y' || answer == 'Y'
       {
         // If they do open a browser window with the login url
-        open::that("https://anilist.co/api/v2/oauth/authorize?client_id=30455&response_type=token").expect("Should open Browser Window.");
+        thread::spawn(|| {
+          open::that("https://anilist.co/api/v2/oauth/authorize?client_id=30455&response_type=token").expect("Should open Browser Window.");
+        });
+        
         // Let them enter their data
         println!("Please enter your access token");
         api_key = read!();
       }
-      else 
+      else if answer == 'n' || answer == 'N'
       {
         api_key = "skip".to_string();
+      }
+      else
+      {
+        println!("Please answer only with either 'y' or 'n'.");
       }
     }
 

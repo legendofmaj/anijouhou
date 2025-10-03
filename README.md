@@ -22,10 +22,8 @@ Terminal application written in Rust that displays the total amount of time spen
 > If you give `skip` as the api key, none will be used.
 
 # Installation
-Download the latest release from the [release page](https://github.com/legendofmaj/anijouhou/releases) <br>
->[!Tip]
-> Or to get the latest development version download it from [GitHub actions](https://github.com/legendofmaj/anijouhou/actions)
-Copy it to your bin directory
+Download the latest release from the [release page](https://github.com/legendofmaj/anijouhou/releases) or to get the latest development version download it from [GitHub actions](https://github.com/legendofmaj/anijouhou/actions) <br>
+Copy the binary to your bin directory
 ```
 cp anijouhou $HOME/.cargo/bin/
 ```

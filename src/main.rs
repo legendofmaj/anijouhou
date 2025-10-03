@@ -32,13 +32,13 @@ fn main()
     {
       println!("Deleting user data");
       std::fs::remove_dir_all(&user_data_folder).expect("anijouhou config directory cannot be deleted.");
-      std::process::exit(1);
+      std::process::exit(0);
     }
     else if args[i] == "--clear-cache" || args[i] == "-c"
     {
       println!("Clearing cache");
       std::fs::remove_file(cache_file.clone()).expect("Cache directory cannot be deleted.");
-      std::process::exit(1);
+      std::process::exit(0);
     }
     else if args[i] == "--hours" || args[i] == "-h"
     {

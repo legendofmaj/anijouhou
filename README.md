@@ -9,27 +9,31 @@ Terminal application written in Rust that displays the total amount of time spen
 # Usage
 - Basic usage: `anijouhou`
 ## File management
-- Clear cache (automically cleared daily): `anijouhou -c` or `anijouhou --clear-cache`
+- Clear cache (automatically cleared daily): `anijouhou -c` or `anijouhou --clear-cache`
 - Delete user data directory (`$HOME/.config/anijouhou`): `anijouhou -d` or `anijouhou --delete`
 ## Output formatting
-- Get only total watchtime hours: `anijouhou -h` or `anijouhou --hours`
-- Get only total watchtime in minutes: `anijouhou -m` or `anijouhou --minutes`
-- Get only total amount of episodes watched: `anijouhou -e` or `anijouhou --episodes`
+- Get total watchtime in hours: `anijouhou -h` or `anijouhou --hours`
+- Get total watchtime in minutes: `anijouhou -m` or `anijouhou --minutes`
+- Get total amount of episodes watched: `anijouhou -e` or `anijouhou --episodes`
 ## Supplying user data via command line arguments
 - Give username via command line argument: `anijouhou -u <your-username>` or `anijouhou --username <your-username>`
-- Give api-key via command line argument: `anijouhou -k <api-key>` or `anijouhou --api-key <api-key>`
->[!Tip]
-> If you give `skip` as the api-key, none will be used.
+- Give api key via command line argument: `anijouhou -k <api-key>` or `anijouhou --api-key <api-key>`
+>[!Important]
+> If you give `skip` as the api key, none will be used.
 
 # Installation
 Download the latest release from the [release page](https://github.com/legendofmaj/anijouhou/releases) <br>
+>[!Tip]
+> Or to get the latest development version download it from [GitHub actions](https://github.com/legendofmaj/anijouhou/actions)
 Copy it to your bin directory
 ```
-sudo cp anijouhou /usr/bin/
+cp anijouhou $HOME/.cargo/bin/
 ```
+>[!Note]
+> Note that this requires cargo to be installed. You can also copy it `/usr/bin/`
 
 # Build from source
-Clone the repository
+Clone the repository and go into the directory
 ```
 git clone https://github.com/legendofmaj/anijouhou.git && cd anijouhou
 ```
@@ -39,7 +43,7 @@ cargo build --release
 ```
 Copy the binary to your bin directory
 ```
-sudo cp target/release/anijouhou /usr/bin/
+cp target/release/anijouhou $HOME/.cargo/bin/
 ```
 
 # Tips and tricks
@@ -71,4 +75,4 @@ fi
 ## Use anijouhou on Android via Termux
 - Install the `openssl` package via `pkg install openssl`
 - Follow the instructions in [Build from source](#build-from-source) to build an executable
-- Move the executable to your binary directory `mv /data/data/com.termux/files/usr/bin/`
+- Move the executable to your binary directory `mv target/release/anijouhou /data/data/com.termux/files/usr/bin/`

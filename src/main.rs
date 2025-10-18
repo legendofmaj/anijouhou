@@ -72,6 +72,10 @@ fn main()
     {
       api_response = save_user_information(user_data_folder, user_data_path, cache_file, username, api_key);
     }
+    else if read_cache(cache_file.clone()) == "outdated" // clear cache if it was not created today
+    {
+      api_response = save_user_information(user_data_folder, user_data_path, cache_file, username, api_key);
+    }
     else 
     {
       api_response = serde_json::from_str(&*read_cache(cache_file.clone())).expect("Couldn't read api response from cache.");
@@ -264,6 +268,10 @@ fn read_cache(cache_file: String) -> String
     {
       cache_content += &cache[i];
     }
+  }
+  else 
+  {
+    return "outdated".to_string();
   }
   return cache_content;
 }

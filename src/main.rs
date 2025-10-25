@@ -1,5 +1,4 @@
 use text_io::read;
-
 use std::thread;
 
 pub mod api;
@@ -25,7 +24,7 @@ fn main()
   let mut username: String  = "none".to_string();
   let mut api_key: String = "none".to_string();
 
-  // Check for command line arguments
+  // check for command line arguments
   let args: Vec<String> = std::env::args().collect();
   for i in 0..args.len()
   {
@@ -145,23 +144,23 @@ fn get_api_key(user_data_folder: String, user_data_path: String, mut username: S
     std::fs::create_dir(&user_data_folder).expect("Folder should be created");
   }
 
-  // Check for exisiting user-data
+  // check for exisiting user-data
   if std::path::Path::new(&user_data_path).exists() == true 
   {
-    // Read user data
+    // read user data
     let user_data = cache::read_lines(&user_data_path);
     username = user_data[0].clone();
     api_key = user_data[1].clone();
   }
   else 
   {
-    // Ask the user for their username
+    // ask the user for their username
     if username == "none"
     {
       println!("Please enter your username.");
       username = read!();
     }
-    // Ask the user if they want to log in
+    // ask the user if they want to log in
     if api_key == "none"
     {
       println!("Do you want to log in?[y|n]");
@@ -169,12 +168,12 @@ fn get_api_key(user_data_folder: String, user_data_path: String, mut username: S
       let answer: char = read!();
       if answer == 'y' || answer == 'Y'
       {
-        // If they do open a browser window with the login url
+        // if they do open a browser window with the login url
         thread::spawn(|| {
           open::that("https://anilist.co/api/v2/oauth/authorize?client_id=30455&response_type=token").expect("Should open Browser Window.");
         });
         
-        // Let them enter their data
+        // let them enter their data
         println!("Please enter your access token");
         api_key = read!();
       }

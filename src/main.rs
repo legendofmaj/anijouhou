@@ -1,15 +1,15 @@
-use serde_json::json;
-use reqwest::{Client, Error};
 use text_io::read;
-use chrono::Local;
 use std::thread;
+
+pub mod api;
+pub mod cache;
 
 fn main()
 {
   // get home path
   let user_data_folder = std::env::var("HOME").unwrap() + "/.config/anijouhou/";
   let user_data_path = user_data_folder.clone() + "config.conf";
-  let cache_file: String = std::env::var("HOME").unwrap() + "/.config/anijouhou/" + "cache.conf";
+  let cache_path: String = std::env::var("HOME").unwrap() + "/.config/anijouhou/" + "cache.conf";
 
   #[derive(Eq, PartialEq)]
   enum Verbosity 
@@ -24,7 +24,7 @@ fn main()
   let mut username: String  = "none".to_string();
   let mut api_key: String = "none".to_string();
 
-  // Check for command line arguments
+  // check for command line arguments
   let args: Vec<String> = std::env::args().collect();
   for i in 0..args.len()
   {
@@ -37,7 +37,7 @@ fn main()
     else if args[i] == "--clear-cache" || args[i] == "-c"
     {
       println!("Clearing cache");
-      std::fs::remove_file(cache_file.clone()).expect("Cache directory cannot be deleted.");
+      std::fs::remove_file(cache_path.clone()).expect("Cache directory cannot be deleted.");
       std::process::exit(0);
     }
     else if args[i] == "--hours" || args[i] == "-h"
@@ -65,25 +65,25 @@ fn main()
   // get api response
   let api_response: serde_json::Value;
   
-  if std::path::Path::new(&cache_file).exists() == true
+  if std::path::Path::new(&cache_path).exists() == true
   {
-    let file_size = std::fs::metadata(cache_file.clone()).unwrap().len();
+    let file_size = std::fs::metadata(cache_path.clone()).unwrap().len();
     if file_size == 0 // check if file is empty
     {
-      api_response = save_user_information(user_data_folder, user_data_path, cache_file, username, api_key);
+      api_response = save_user_information(user_data_folder, user_data_path, cache_path, username, api_key);
     }
-    else if read_cache(cache_file.clone()) == "outdated" // clear cache if it was not created today
+    else if cache::read_cache(cache_path.clone()) == "outdated" // clear cache if it was not created today
     {
-      api_response = save_user_information(user_data_folder, user_data_path, cache_file, username, api_key);
+      api_response = save_user_information(user_data_folder, user_data_path, cache_path, username, api_key);
     }
     else 
     {
-      api_response = serde_json::from_str(&*read_cache(cache_file.clone())).expect("Couldn't read api response from cache.");
+      api_response = serde_json::from_str(&*cache::read_cache(cache_path.clone())).expect("Couldn't read api response from cache.");
     }
   }
   else 
   {
-    api_response = save_user_information(user_data_folder, user_data_path, cache_file, username, api_key);
+    api_response = save_user_information(user_data_folder, user_data_path, cache_path, username, api_key);
   }
 
   // parse json
@@ -115,12 +115,12 @@ fn main()
   
 }
 
-fn save_user_information(user_data_folder: String, user_data_path: String, cache_file: String, username: String, api_key: String) -> serde_json::Value
+fn save_user_information(user_data_folder: String, user_data_path: String, cache_path: String, username: String, api_key: String) -> serde_json::Value
 {
   // ask user for api_key
   let data: Vec<String> = get_api_key(user_data_folder.clone(), user_data_path, username, api_key);
   // send request and save result
-  let api_response = request(data[0].clone(), data[1].clone());
+  let api_response = api::request(data[0].clone(), data[1].clone());
   // check if the api response contains errors.
   if api_response["data"]["User"].to_string() == "null"
   {
@@ -132,7 +132,7 @@ fn save_user_information(user_data_folder: String, user_data_path: String, cache
     std::process::exit(404);
   }
   // save result locally
-  write_cache(serde_json::to_string_pretty(&api_response).unwrap(), cache_file);
+  cache::write_cache(serde_json::to_string_pretty(&api_response).unwrap(), cache_path);
   return api_response;
 }
 
@@ -144,23 +144,23 @@ fn get_api_key(user_data_folder: String, user_data_path: String, mut username: S
     std::fs::create_dir(&user_data_folder).expect("Folder should be created");
   }
 
-  // Check for exisiting user-data
+  // check for exisiting user-data
   if std::path::Path::new(&user_data_path).exists() == true 
   {
-    // Read user data
-    let user_data = read_lines(&user_data_path);
+    // read user data
+    let user_data = cache::read_lines(&user_data_path);
     username = user_data[0].clone();
     api_key = user_data[1].clone();
   }
   else 
   {
-    // Ask the user for their username
+    // ask the user for their username
     if username == "none"
     {
       println!("Please enter your username.");
       username = read!();
     }
-    // Ask the user if they want to log in
+    // ask the user if they want to log in
     if api_key == "none"
     {
       println!("Do you want to log in?[y|n]");
@@ -168,12 +168,12 @@ fn get_api_key(user_data_folder: String, user_data_path: String, mut username: S
       let answer: char = read!();
       if answer == 'y' || answer == 'Y'
       {
-        // If they do open a browser window with the login url
+        // if they do open a browser window with the login url
         thread::spawn(|| {
           open::that("https://anilist.co/api/v2/oauth/authorize?client_id=30455&response_type=token").expect("Should open Browser Window.");
         });
         
-        // Let them enter their data
+        // let them enter their data
         println!("Please enter your access token");
         api_key = read!();
       }
@@ -192,97 +192,4 @@ fn get_api_key(user_data_folder: String, user_data_path: String, mut username: S
   }
   let data = vec![username, api_key];
   return data;
-}
-
-const QUERY: &str = "
-query ($name: String) {
-  User(name: $name)
-  {
-    name
-    statistics {
-      anime {
-        episodesWatched
-        minutesWatched
-      }
-    }
-  }
-}
-";
-
-#[tokio::main]
-async fn request(username: String, access_token: String) -> serde_json::Value {
-    let client = Client::new();
-    // Define query and variables
-    let json = json!({"query": QUERY, "variables": {"name": username}});
-    // Make HTTP post request
-    let resp: Result<String, Error>;
-    if access_token == "skip"
-    {
-      resp = client.post("https://graphql.anilist.co/")
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json")
-                .body(json.to_string())
-                .send()
-                .await
-                .unwrap()
-                .text()
-                .await;
-    }
-    else 
-    {
-      resp = client.post("https://graphql.anilist.co/")
-                      .header("Authorization", String::from("Bearer ") + &access_token)
-                      .header("Content-Type", "application/json")
-                      .header("Accept", "application/json")
-                      .body(json.to_string())
-                      .send()
-                      .await
-                      .unwrap()
-                      .text()
-                      .await;
-    }
-
-    // Get json
-    let result: serde_json::Value = serde_json::from_str(&resp.unwrap()).unwrap();
-    return result;
-}
-
-fn write_cache(result: String, cache_file: String)
-{
-  // write current data to cache
-  let today = Local::now().date_naive().to_string();
-  // write result to file
-  std::fs::write(cache_file, today + "\n" + &result).expect("Could not write api response to cache.")
-}
-
-fn read_cache(cache_file: String) -> String
-{
-  let mut cache_content: String = Default::default();
-  // save data in variable
-  let cache = read_lines(&cache_file);
-  // check the first line
-  if cache[0] == Local::now().date_naive().to_string() 
-  {
-    //println!("File has been created today.");
-    for i in 1..cache.len()
-    {
-      cache_content += &cache[i];
-    }
-  }
-  else 
-  {
-    return "outdated".to_string();
-  }
-  return cache_content;
-}
-
-// helper functions
-fn read_lines(filename: &str) -> Vec<String> {
-  //Taken from https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
-  use std::fs::read_to_string;
-    read_to_string(filename) 
-        .unwrap()  // panic on possible file-reading errors
-        .lines()  // split the string into an iterator of string slices
-        .map(String::from)  // make each slice into a string
-        .collect()  // gather them together into a vector
 }

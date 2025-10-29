@@ -6,16 +6,15 @@ pub mod cache;
 
 fn main()
 {
-  // get home path
   let user_data_folder: String;
 
   if cfg!(target_os = "linux")
   {
-    user_data_folder = std::env::var("HOME").expect("No HOME directory") + "/.config/anijouhou/";
+    user_data_folder = std::env::var("HOME").expect("No HOME directory present") + "/.config/anijouhou/";
   }
   else if cfg!(target_os = "windows")
   {
-    user_data_folder = std::env::var("APPDATA").expect("No APP_DATA folder") + r"\anijouhou\";
+    user_data_folder = std::env::var("APPDATA").expect("No APP_DATA directory present") + r"\anijouhou\";
   }
   else {std::process::exit(1);}
   

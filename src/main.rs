@@ -15,7 +15,7 @@ fn main()
   }
   else if cfg!(target_os = "windows")
   {
-    user_data_folder = std::env::var("APP_DATA").expect("No APP_DATA folder") + r"\anijouhou\";
+    user_data_folder = std::env::var("APPDATA").expect("No APP_DATA folder") + r"\anijouhou\";
   }
   else {std::process::exit(1);}
   

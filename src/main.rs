@@ -7,9 +7,15 @@ pub mod cache;
 fn main()
 {
   // get home path
-  let user_data_folder = std::env::var("HOME").unwrap() + "/.config/anijouhou/";
-  let user_data_path = user_data_folder.clone() + "config.conf";
-  let cache_path: String = std::env::var("HOME").unwrap() + "/.config/anijouhou/" + "cache.conf";
+  let mut user_data_folder = std::env::var("HOME").unwrap() + "/.config/anijouhou/";
+
+  if cfg!(target_os = "windows")
+  {
+    user_data_folder = std::env::var("APP_DATA").expect("No APP_DATA folder") + r"\anijouhou\";
+  }
+  
+  let config_path = user_data_folder.clone() + "config.conf";
+  let cache_path: String = user_data_folder.clone() + "cache.conf";
 
   #[derive(Eq, PartialEq)]
   enum Verbosity 
@@ -70,11 +76,11 @@ fn main()
     let file_size = std::fs::metadata(cache_path.clone()).unwrap().len();
     if file_size == 0 // check if file is empty
     {
-      api_response = save_user_information(user_data_folder, user_data_path, cache_path, username, api_key);
+      api_response = save_user_information(user_data_folder, config_path, cache_path, username, api_key);
     }
     else if cache::read_cache(cache_path.clone()) == "outdated" // clear cache if it was not created today
     {
-      api_response = save_user_information(user_data_folder, user_data_path, cache_path, username, api_key);
+      api_response = save_user_information(user_data_folder, config_path, cache_path, username, api_key);
     }
     else 
     {
@@ -83,7 +89,7 @@ fn main()
   }
   else 
   {
-    api_response = save_user_information(user_data_folder, user_data_path, cache_path, username, api_key);
+    api_response = save_user_information(user_data_folder, config_path, cache_path, username, api_key);
   }
 
   // parse json
@@ -115,10 +121,10 @@ fn main()
   
 }
 
-fn save_user_information(user_data_folder: String, user_data_path: String, cache_path: String, username: String, api_key: String) -> serde_json::Value
+fn save_user_information(user_data_folder: String, config_path: String, cache_path: String, username: String, api_key: String) -> serde_json::Value
 {
   // ask user for api_key
-  let data: Vec<String> = get_api_key(user_data_folder.clone(), user_data_path, username, api_key);
+  let data: Vec<String> = get_api_key(user_data_folder.clone(), config_path, username, api_key);
   // send request and save result
   let api_response = api::request(data[0].clone(), data[1].clone());
   // check if the api response contains errors.
@@ -136,7 +142,7 @@ fn save_user_information(user_data_folder: String, user_data_path: String, cache
   return api_response;
 }
 
-fn get_api_key(user_data_folder: String, user_data_path: String, mut username: String, mut api_key: String) -> Vec<String>
+fn get_api_key(user_data_folder: String, config_path: String, mut username: String, mut api_key: String) -> Vec<String>
 {
   // create folder if it doesn't exists
   if std::path::Path::new(&user_data_folder).exists() == false
@@ -145,10 +151,10 @@ fn get_api_key(user_data_folder: String, user_data_path: String, mut username: S
   }
 
   // check for exisiting user-data
-  if std::path::Path::new(&user_data_path).exists() == true 
+  if std::path::Path::new(&config_path).exists() == true 
   {
     // read user data
-    let user_data = cache::read_lines(&user_data_path);
+    let user_data = cache::read_lines(&config_path);
     username = user_data[0].clone();
     api_key = user_data[1].clone();
   }
@@ -188,7 +194,7 @@ fn get_api_key(user_data_folder: String, user_data_path: String, mut username: S
     }
 
     let final_output: String = username.clone() + "\n" + &api_key;
-    std::fs::write(&user_data_path, final_output).expect("Should write to config file.");
+    std::fs::write(&config_path, final_output).expect("Should write to config file.");
   }
   let data = vec![username, api_key];
   return data;

@@ -7,7 +7,7 @@ pub mod cache;
 fn main()
 {
   // get home path
-  let mut user_data_folder = std::env::var("HOME").unwrap() + "/.config/anijouhou/";
+  let mut user_data_folder = std::env::var("HOME").expect("No HOME directory") + "/.config/anijouhou/";
 
   if cfg!(target_os = "windows")
   {

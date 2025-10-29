@@ -1,4 +1,4 @@
-name: build for linux
+name: build for windows
 
 on:
   push:
@@ -33,4 +33,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: anijouhou
-        path: target/release/anijouhou
+        path: target\release\anijouhou

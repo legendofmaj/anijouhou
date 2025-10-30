@@ -8,7 +8,7 @@ fn main()
 {
   let user_data_folder: String;
 
-  if cfg!(target_os = "linux")
+  if cfg!(target_os = "linux") || cfg!(target_os = "android")
   {
     user_data_folder = std::env::var("HOME").expect("No HOME directory present") + "/.config/anijouhou/";
   }
@@ -16,7 +16,11 @@ fn main()
   {
     user_data_folder = std::env::var("APPDATA").expect("No APP_DATA directory present") + r"\anijouhou\";
   }
-  else {std::process::exit(1);}
+  else 
+  {
+    println!("Your operating system is not supported.");
+    std::process::exit(1);
+  }
   
   let config_path = user_data_folder.clone() + "config.conf";
   let cache_path: String = user_data_folder.clone() + "cache.conf";

@@ -6,6 +6,7 @@ pub mod cache;
 
 fn main()
 {
+  //--os specific file paths--
   let user_data_folder: String;
 
   if cfg!(target_os = "linux") || cfg!(target_os = "android")
@@ -18,7 +19,8 @@ fn main()
   }
   else 
   {
-    println!("Your operating system is not supported.");
+    println!("Your operating system is not supported.\n
+    Don't worry, if your OS supports a Unix like file structure, simply download the source code and add your OS to the list of supported ones.");
     std::process::exit(1);
   }
   
@@ -42,37 +44,64 @@ fn main()
   let args: Vec<String> = std::env::args().collect();
   for i in 0..args.len()
   {
-    if args[i] == "--delete" || args[i] == "-d"
+    if args[i] == "-d" || args[i] == "--delete"
     {
       println!("Deleting user data");
       std::fs::remove_dir_all(&user_data_folder).expect("anijouhou config directory cannot be deleted.");
       std::process::exit(0);
     }
-    else if args[i] == "--clear-cache" || args[i] == "-c"
+    else if args[i] == "-c" || args[i] == "--clear-cache"
     {
       println!("Clearing cache");
       std::fs::remove_file(cache_path.clone()).expect("Cache directory cannot be deleted.");
       std::process::exit(0);
     }
-    else if args[i] == "--hours" || args[i] == "-h"
+    else if args[i] == "-h" || args[i] == "--hours"
     {
       verbosity = Verbosity::Hours
     }
-    else if args[i] == "--episodes" || args[i] == "-e"
+    else if args[i] == "-e" || args[i] == "--episodes"
     {
       verbosity = Verbosity::Episodes;
     }
-    else if args[i] == "--minutes" || args[i] == "-m"
+    else if args[i] == "-m" || args[i] == "--minutes"
     {
       verbosity = Verbosity::Minutes;
     }
-    else if args[i] == "-u" || args[i] == "--username"
+    else if args[i] == "-u" || args[i] == "--username" 
     {
+      // clear config directory
+      if std::path::Path::new(&user_data_folder).exists() 
+      {
+        std::fs::remove_dir_all(&user_data_folder).expect("anijouhou config directory cannot be deleted.");
+      }
       username = args[i+1].clone();
     }
     else if args[i] == "-k" || args[i] == "--api-key"
     {
-      api_key = args[i+1].clone();
+      if i >= 2 {api_key = args[i+1].clone();}
+      else 
+      {
+        println!("Please always enter a username AND an api key.");
+        std::process::exit(1);
+      }
+    }
+    else if args[i].to_string().contains("anijouhou") == false && i <= 2
+    {
+      println!("{}", args[i]);
+      println!("{}", i);
+      // clear config directory
+      if std::path::Path::new(&user_data_folder).exists() 
+      {
+        std::fs::remove_dir_all(&user_data_folder).expect("anijouhou config directory cannot be deleted.");
+      }
+
+      // assume that an argument without a flag is a public user.
+      if args[i].to_string().is_empty() == false 
+      {
+        username = args[i].clone();
+        api_key = "skip".to_string();
+      }
     }
   }
 
@@ -95,7 +124,7 @@ fn main()
       api_response = serde_json::from_str(&*cache::read_cache(cache_path.clone())).expect("Couldn't read api response from cache.");
     }
   }
-  else 
+  else
   {
     api_response = save_user_information(user_data_folder, config_path, cache_path, username, api_key);
   }

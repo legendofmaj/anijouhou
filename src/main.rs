@@ -8,19 +8,13 @@ fn main()
   //--os specific file paths--
   let user_data_folder: String;
 
-  if cfg!(target_os = "linux") || cfg!(target_os = "android")
-  {
-    user_data_folder = std::env::var("HOME").expect("No HOME directory present") + "/.config/anijouhou/";
-  }
-  else if cfg!(target_os = "windows")
+  if cfg!(target_os = "windows")
   {
     user_data_folder = std::env::var("APPDATA").expect("No APP_DATA directory present") + r"\anijouhou\";
   }
-  else 
+  else
   {
-    println!("Your operating system is not supported.\n
-    Don't worry, if your OS supports a Unix like file structure, simply download the source code and add your OS to the list of supported ones.");
-    std::process::exit(1);
+    user_data_folder = std::env::var("HOME").expect("No HOME directory present") + "/.config/anijouhou/";
   }
   
   let config_path = user_data_folder.clone() + "config.conf";
@@ -78,24 +72,25 @@ fn main()
     }
     else if args[i] == "-k" || args[i] == "--api-key"
     {
-      if i >= 2 {api_key = args[i+1].clone();}
+      if i >= 2 
+      {
+        api_key = args[i+1].clone();
+      }
       else 
       {
         println!("Please always enter a username AND an api key.");
         std::process::exit(1);
       }
     }
+    // assume that an argument without a flag is the username of a user with a public profile.
     else if args[i].to_string().contains("anijouhou") == false && i <= 2
     {
-      println!("{}", args[i]);
-      println!("{}", i);
       // clear config directory
       if std::path::Path::new(&user_data_folder).exists() 
       {
         std::fs::remove_dir_all(&user_data_folder).expect("anijouhou config directory cannot be deleted.");
       }
 
-      // assume that an argument without a flag is a public user.
       if args[i].to_string().is_empty() == false 
       {
         username = args[i].clone();

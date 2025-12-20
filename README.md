@@ -13,7 +13,7 @@ cargo install --git "https://github.com/legendofmaj/anijouhou.git"
 >[!Note]
 > Note that this requires cargo to be installed.
 
-Should you not have `cargo` installed, or want to simply download the binary, you can do so from the [release page](https://github.com/legendofmaj/anijouhou/releases) or to get the latest development version, download it from [GitHub actions](https://github.com/legendofmaj/anijouhou/actions).
+Should you not have `cargo` installed, or want to simply download the binary, you can do so from the [release page](https://github.com/legendofmaj/anijouhou/releases) or get the latest development version from [GitHub actions](https://github.com/legendofmaj/anijouhou/actions).
 
 Binaries are available for both Linux and Windows. In order to launch the application without being in the directory the binary is located in you will have to add it to your PATH.
 
@@ -90,8 +90,6 @@ anijouhou --api-key <api-key>
 >[!Important]
 > If you give `skip` as the api key, none will be used.
 
-
-
 # Tips and tricks
 ## Use anijouhou in fastfetch
 Add the following to your `~/.config/fastfetch/config.jsonc`
@@ -102,8 +100,7 @@ Add the following to your `~/.config/fastfetch/config.jsonc`
 }
 ```
 ## Switch between accounts
-Should you want to switch between multiple private accounts, you can do so with a shell script like the one shown below. <br>
-See [here](scripts/) for additional information on the script below.
+Should you want to switch between multiple private accounts, you can do so with a shell script like the one shown below.
 ```bash
 #!/bin/bash
 username_1="your_username"

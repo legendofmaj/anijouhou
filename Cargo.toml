@@ -1,13 +1,12 @@
 [package]
 name = "anijouhou"
-description = "Terminal application that displays the total amount of time spent watching anime by fetching data from anilist."
-version = "0.3.4"
+description = "A terminal application that displays the total amount of time spent watching anime by fetching data from anilist."
+version = "0.3.5"
 edition = "2024"
 
 [dependencies]
 serde_json = "1.0"
 reqwest = "0.11.8"
 tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
-text_io = "0.1.13"
-open = "5"
+open = "5.3.3"
 chrono = "0.4.42"

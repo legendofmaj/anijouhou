@@ -1,4 +1,3 @@
-use text_io::read;
 use std::thread;
 
 pub mod api;
@@ -6,20 +5,16 @@ pub mod cache;
 
 fn main()
 {
+  //--os specific file paths--
   let user_data_folder: String;
 
-  if cfg!(target_os = "linux") || cfg!(target_os = "android")
+  if cfg!(target_os = "windows")
   {
-    user_data_folder = std::env::var("HOME").expect("No HOME directory present") + "/.config/anijouhou/";
+    user_data_folder = std::env::var("APPDATA").expect("No APP_DATA directory present.") + r"\anijouhou\";
   }
-  else if cfg!(target_os = "windows")
+  else
   {
-    user_data_folder = std::env::var("APPDATA").expect("No APP_DATA directory present") + r"\anijouhou\";
-  }
-  else 
-  {
-    println!("Your operating system is not supported.");
-    std::process::exit(1);
+    user_data_folder = std::env::var("HOME").expect("No $HOME directory present.") + "/.config/anijouhou/";
   }
   
   let config_path = user_data_folder.clone() + "config.conf";
@@ -42,37 +37,65 @@ fn main()
   let args: Vec<String> = std::env::args().collect();
   for i in 0..args.len()
   {
-    if args[i] == "--delete" || args[i] == "-d"
+    if args[i] == "-d" || args[i] == "--delete"
     {
       println!("Deleting user data");
-      std::fs::remove_dir_all(&user_data_folder).expect("anijouhou config directory cannot be deleted.");
+      std::fs::remove_dir_all(&user_data_folder).expect("anijouhou config directory can not be deleted.");
       std::process::exit(0);
     }
-    else if args[i] == "--clear-cache" || args[i] == "-c"
+    else if args[i] == "-c" || args[i] == "--clear-cache"
     {
       println!("Clearing cache");
-      std::fs::remove_file(cache_path.clone()).expect("Cache directory cannot be deleted.");
+      std::fs::remove_file(cache_path.clone()).expect("Cache directory can not be deleted.");
       std::process::exit(0);
     }
-    else if args[i] == "--hours" || args[i] == "-h"
+    else if args[i] == "-h" || args[i] == "--hours"
     {
       verbosity = Verbosity::Hours
     }
-    else if args[i] == "--episodes" || args[i] == "-e"
+    else if args[i] == "-e" || args[i] == "--episodes"
     {
       verbosity = Verbosity::Episodes;
     }
-    else if args[i] == "--minutes" || args[i] == "-m"
+    else if args[i] == "-m" || args[i] == "--minutes"
     {
       verbosity = Verbosity::Minutes;
     }
-    else if args[i] == "-u" || args[i] == "--username"
+    else if args[i] == "-u" || args[i] == "--username" 
     {
+      // clear config directory
+      if std::path::Path::new(&user_data_folder).exists() 
+      {
+        std::fs::remove_dir_all(&user_data_folder).expect("Anijouhou config directory can not be deleted.");
+      }
       username = args[i+1].clone();
     }
     else if args[i] == "-k" || args[i] == "--api-key"
     {
-      api_key = args[i+1].clone();
+      if i >= 2 
+      {
+        api_key = args[i+1].clone();
+      }
+      else 
+      {
+        println!("Please always enter a username AND an api key.");
+        std::process::exit(1);
+      }
+    }
+    // assume that an argument without a flag is the username of a user with a public profile.
+    else if args[i].to_string().contains("anijouhou") == false && i <= 2
+    {
+      // clear config directory
+      if std::path::Path::new(&user_data_folder).exists() 
+      {
+        std::fs::remove_dir_all(&user_data_folder).expect("Anijouhou config directory can not be deleted.");
+      }
+
+      if args[i].to_string().is_empty() == false 
+      {
+        username = args[i].clone();
+        api_key = "skip".to_string();
+      }
     }
   }
 
@@ -95,7 +118,7 @@ fn main()
       api_response = serde_json::from_str(&*cache::read_cache(cache_path.clone())).expect("Couldn't read api response from cache.");
     }
   }
-  else 
+  else
   {
     api_response = save_user_information(user_data_folder, config_path, cache_path, username, api_key);
   }
@@ -142,7 +165,7 @@ fn save_user_information(user_data_folder: String, config_path: String, cache_pa
     println!("Is {} the correct spelling of your username?", data[0]);
     print!("User data will not be saved.");
     // User data should not be saved.
-    std::fs::remove_dir_all(user_data_folder).expect("anijouhou config directory cannot be deleted.");
+    std::fs::remove_dir_all(user_data_folder).expect("Anijouhou config directory can not be deleted.");
     std::process::exit(404);
   }
   // save result locally
@@ -155,7 +178,7 @@ fn get_api_key(user_data_folder: String, config_path: String, mut username: Stri
   // create folder if it doesn't exists
   if std::path::Path::new(&user_data_folder).exists() == false
   {
-    std::fs::create_dir(&user_data_folder).expect("Folder should be created");
+    std::fs::create_dir(&user_data_folder).expect("Config directory could not be created.");
   }
 
   // check for exisiting user-data
@@ -172,26 +195,26 @@ fn get_api_key(user_data_folder: String, config_path: String, mut username: Stri
     if username == "none"
     {
       println!("Please enter your username.");
-      username = read!();
+      username = read();
     }
     // ask the user if they want to log in
     if api_key == "none"
     {
       println!("Do you want to log in?[y|n]");
       println!("If your account is set to private this is required.");
-      let answer: char = read!();
-      if answer == 'y' || answer == 'Y'
+      let answer: String = read();
+      if answer == "y" || answer == "Y"
       {
         // if they do open a browser window with the login url
         thread::spawn(|| {
-          open::that("https://anilist.co/api/v2/oauth/authorize?client_id=30455&response_type=token").expect("Should open Browser Window.");
+          open::that("https://anilist.co/api/v2/oauth/authorize?client_id=30455&response_type=token").expect("Could not open browser window.");
         });
         
         // let them enter their data
         println!("Please enter your access token");
-        api_key = read!();
+        api_key = read();
       }
-      else if answer == 'n' || answer == 'N'
+      else if answer == "n" || answer == "N"
       {
         api_key = "skip".to_string();
       }
@@ -202,8 +225,19 @@ fn get_api_key(user_data_folder: String, config_path: String, mut username: Stri
     }
 
     let final_output: String = username.clone() + "\n" + &api_key;
-    std::fs::write(&config_path, final_output).expect("Should write to config file.");
+    std::fs::write(&config_path, final_output).expect("Could not write to configuration file.");
   }
   let data = vec![username, api_key];
   return data;
+}
+
+fn read() -> String
+{
+  let mut input: String = String::new();
+  std::io::stdin()
+    .read_line(&mut input)
+    .expect("Couldn't read or store user input");
+  // clear any unnecessary formatting
+  input = input.replace("\n", "");
+  return input;
 }

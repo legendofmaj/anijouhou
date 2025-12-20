@@ -1,7 +1,7 @@
 [package]
 name = "anijouhou"
-description = "Terminal application that displays the total amount of time spent watching anime by fetching data from anilist."
-version = "0.3.4"
+description = "A terminal application that displays the total amount of time spent watching anime by fetching data from anilist."
+version = "0.3.5"
 edition = "2024"
 
 [dependencies]

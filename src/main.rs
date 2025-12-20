@@ -1,4 +1,3 @@
-use text_io::read;
 use std::thread;
 
 pub mod api;
@@ -201,15 +200,15 @@ fn get_api_key(user_data_folder: String, config_path: String, mut username: Stri
     if username == "none"
     {
       println!("Please enter your username.");
-      username = read!();
+      username = read();
     }
     // ask the user if they want to log in
     if api_key == "none"
     {
       println!("Do you want to log in?[y|n]");
       println!("If your account is set to private this is required.");
-      let answer: char = read!();
-      if answer == 'y' || answer == 'Y'
+      let answer: String = read();
+      if answer == "y" || answer == "Y"
       {
         // if they do open a browser window with the login url
         thread::spawn(|| {
@@ -218,9 +217,9 @@ fn get_api_key(user_data_folder: String, config_path: String, mut username: Stri
         
         // let them enter their data
         println!("Please enter your access token");
-        api_key = read!();
+        api_key = read();
       }
-      else if answer == 'n' || answer == 'N'
+      else if answer == "n" || answer == "N"
       {
         api_key = "skip".to_string();
       }
@@ -235,4 +234,15 @@ fn get_api_key(user_data_folder: String, config_path: String, mut username: Stri
   }
   let data = vec![username, api_key];
   return data;
+}
+
+fn read() -> String
+{
+  let mut input: String = String::new();
+  std::io::stdin()
+    .read_line(&mut input)
+    .expect("Couldn't read or store user input");
+  // clear any unnecessary formatting
+  input = input.replace("\n", "");
+  return input;
 }

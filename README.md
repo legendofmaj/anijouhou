@@ -90,6 +90,16 @@ anijouhou --api-key <api-key>
 >[!Important]
 > If you give `skip` as the api key, none will be used.
 
+## miscellaneous
+On Windows the terminal will stay open when starting `anijouhou.exe`. To prevent this behavior (e.g. when starting anijouhou from PowerShell) use:
+```PowerShell
+.\anijouhou.exe --automatically-close
+```
+On Linux the behavior is the opposite. If you would want anijouhou to stay open (e.g. when starting it via a `.desktop` file) use:
+```bash
+./anijouhou --automatically-close
+```
+
 # Tips and tricks
 ## Use anijouhou in fastfetch
 Add the following to your `~/.config/fastfetch/config.jsonc`

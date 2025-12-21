@@ -20,7 +20,7 @@ In order to launch anijouhou from your terminal emulator you will need to copy t
 ```bash
 sudo cp anijouhou /usr/bin/
 ```
-### Windows
+### On Windows
 - make sure a bin directory is present e.g.: `C:\Users\YourUsername\bin\` (If not, create one)
 - move `anijouhou.exe` to the directory
 - add your bin directory to PATH:

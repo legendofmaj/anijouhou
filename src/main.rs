@@ -5,7 +5,6 @@ pub mod cache;
 
 fn main()
 {
-  //--os specific file paths--
   let user_data_folder: String;
 
   if cfg!(target_os = "windows")
@@ -91,7 +90,7 @@ fn main()
     }
 
     // assume that an argument without a flag is the username of a user with a public profile.
-    else if args[i].to_string().contains("anijouhou") == false && i <= 2
+    else if !args[i].to_string().contains("anijouhou") && i <= 2
     {
       // clear config directory
       if std::path::Path::new(&user_data_folder).exists() 
@@ -99,7 +98,7 @@ fn main()
         std::fs::remove_dir_all(&user_data_folder).expect("Anijouhou config directory can not be deleted.");
       }
 
-      if args[i].to_string().is_empty() == false 
+      if !args[i].to_string().is_empty()
       {
         username = args[i].clone();
         api_key = "skip".to_string();
@@ -110,7 +109,7 @@ fn main()
   // get api response
   let api_response: serde_json::Value;
   
-  if std::path::Path::new(&cache_path).exists() == true
+  if std::path::Path::new(&cache_path).exists()
   {
     let file_size = std::fs::metadata(cache_path.clone()).unwrap().len();
     if file_size == 0 // check if file is empty
@@ -188,13 +187,13 @@ fn save_user_information(user_data_folder: String, config_path: String, cache_pa
 fn get_api_key(user_data_folder: String, config_path: String, mut username: String, mut api_key: String) -> Vec<String>
 {
   // create folder if it doesn't exists
-  if std::path::Path::new(&user_data_folder).exists() == false
+  if !std::path::Path::new(&user_data_folder).exists()
   {
     std::fs::create_dir(&user_data_folder).expect("Config directory could not be created.");
   }
 
   // check for exisiting user-data
-  if std::path::Path::new(&config_path).exists() == true 
+  if std::path::Path::new(&config_path).exists()
   {
     // read user data
     let user_data = cache::read_lines(&config_path);

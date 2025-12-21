@@ -32,6 +32,9 @@ fn main()
   let mut verbosity: Verbosity = Verbosity::All;
   let mut username: String  = "none".to_string();
   let mut api_key: String = "none".to_string();
+  let mut close_automatically: bool = true;
+  if cfg!(target_os = "windows"){close_automatically = false;}
+  
 
   // check for command line arguments
   let args: Vec<String> = std::env::args().collect();
@@ -82,6 +85,11 @@ fn main()
         std::process::exit(1);
       }
     }
+    else if args[i] == "-a" || args[i] == "automatically-close"
+    {
+      close_automatically = !close_automatically;
+    }
+
     // assume that an argument without a flag is the username of a user with a public profile.
     else if args[i].to_string().contains("anijouhou") == false && i <= 2
     {
@@ -136,6 +144,10 @@ fn main()
   if verbosity == Verbosity::All
   {
     println!("{} watched {} episodes making for a total of {} hours ({} minutes).", username, episodes, hours, minutes);
+    if !close_automatically
+    {
+      std::io::stdin().read_line(&mut String::new()).unwrap();
+    }
   }
   else if verbosity == Verbosity::Hours
   {
@@ -239,5 +251,10 @@ fn read() -> String
     .expect("Couldn't read or store user input");
   // clear any unnecessary formatting
   input = input.replace("\n", "");
+  // remove CRLF newlines
+  if input.ends_with('\r')
+  {
+    input = input.replace("\r", "");
+  }
   return input;
 }

@@ -7,21 +7,30 @@ anijouhou (アニメ情報) is a terminal application that displays the total am
 | <img src="res/anijouhou.png" width="500"/>                     | <img src="res/fastfetch_anijouhou.png" width="500"/>                   |
 
 # Installation
+## via cargo
 ```bash
 cargo install --git "https://github.com/legendofmaj/anijouhou.git"
 ```
->[!Note]
-> Note that this requires cargo to be installed.
 
-Should you not have `cargo` installed, or want to simply download the binary, you can do so from the [release page](https://github.com/legendofmaj/anijouhou/releases) or get the latest development version from [GitHub actions](https://github.com/legendofmaj/anijouhou/actions).
+## via precompiled binaries
+Download the binaries either from the [release page](https://github.com/legendofmaj/anijouhou/releases) or to get the latest development version from [GitHub actions](https://github.com/legendofmaj/anijouhou/actions).
 
-Binaries are available for both Linux and Windows. In order to launch the application without being in the directory the binary is located in you will have to add it to your PATH.
-
-On Linux you can this as follows:
-```
+In order to launch anijouhou from your terminal emulator you will need to copy the binary to a directory in your path. If you don't need that, you can skip the following steps.
+### On Linux
+```bash
 sudo cp anijouhou /usr/bin/
 ```
-On Windows the process is a bit more involved. You can read about it [here](https://stackoverflow.com/questions/9546324/adding-a-directory-to-the-path-environment-variable-in-windows).
+### Windows
+- make sure a bin directory is present e.g.: `C:\Users\YourUsername\bin\` (If not, create one)
+- move `anijouhou.exe` to the directory
+- add your bin directory to PATH:
+  - open settings
+  - search for path and choose `edit the system environment variables`
+  - click on `environment variables`
+  - choose `path` and click `edit`
+  - choose `new` and add your bin directory
+  - click ok to all the close dialogues
+- launch the app with `anijouhou` in any terminal
 
 # Build from source
 Clone the repository and go into the directory.

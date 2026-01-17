@@ -4,12 +4,12 @@ use viuer::{print, Config};
 use colored::{ColoredString, Colorize};
 
 fn configuration(column_size: u16, username: String, watchtime_hours: i64 , watchtime_minutes: i64, episodes: i64) {
-      // print text on the right
-      print_in_second_column(column_size, username.clone().bold());
-      print_in_second_column(column_size, " ".to_string().normal());
-      print_in_second_column_themed(column_size, "", watchtime_hours.to_string(), "hours");
-      print_in_second_column_themed(column_size, "󰟴", watchtime_minutes.to_string(), "minutes");
-      print_in_second_column_themed(column_size, "󰆙", episodes.to_string(), "episodes");
+    // print text on the right
+    print_in_second_column(column_size, username.clone().bold());
+    print_in_second_column(column_size, " ".to_string().normal());
+    print_in_second_column_themed(column_size, "", watchtime_hours.to_string(), "hours");
+    print_in_second_column_themed(column_size, "󰟴", watchtime_minutes.to_string(), "minutes");
+    print_in_second_column_themed(column_size, "󰆙", episodes.to_string(), "episodes");
 }
 
 pub fn main(avatar_url: String, username: String, watchtime_hours: i64 , watchtime_minutes: i64, episodes: i64) -> Result<(), Box<dyn std::error::Error>> {  
@@ -34,11 +34,6 @@ pub fn main(avatar_url: String, username: String, watchtime_hours: i64 , watchti
       
       // print image on the left
       print_image(image_size, image);
-      // print user in beneath the image (in the middle)
-      //let username_len = convert_usize(username.len());
-      //let start_username_at = (image_size - username_len) / 2;
-      //for _i in 0..(start_username_at) {print!(" ");}
-      //println!("{}", username.bold());
   }
   Ok(())
 }
@@ -47,9 +42,8 @@ pub fn main(avatar_url: String, username: String, watchtime_hours: i64 , watchti
 fn print_image(image_size: u16, image: DynamicImage) {
 
     let conf = Config {
-        // Set dimensions.
+        // set dimensions.
         width: Some(image_size.into()),
-        //height: Some(25),
         ..Default::default()
     };
 

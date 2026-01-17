@@ -1,0 +1,3 @@
+- remove hours, minutes etc. when printing them. (So that the user can decided whether to include that)
+- cache the image (see: https://docs.rs/image/latest/image/fn.save_buffer_with_format.html) -> in cache.rs
+- make v0.4.0 work on android

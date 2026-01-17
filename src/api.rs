@@ -12,6 +12,10 @@ query ($name: String) {
         minutesWatched
       }
     }
+    avatar {
+      large
+    }
+    updatedAt
   }
 }
 ";

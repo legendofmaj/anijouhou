@@ -2,6 +2,7 @@ use std::thread;
 
 pub mod api;
 pub mod cache;
+pub mod frontend;
 
 fn main()
 {
@@ -26,6 +27,7 @@ fn main()
     Hours,
     Episodes,
     Minutes,
+    Text,
   }
 
   let mut verbosity: Verbosity = Verbosity::All;
@@ -62,6 +64,10 @@ fn main()
     else if args[i] == "-m" || args[i] == "--minutes"
     {
       verbosity = Verbosity::Minutes;
+    }
+    else if args[i] == "-t" || args[i] == "--text"
+    {
+      verbosity = Verbosity::Text;
     }
     else if args[i] == "-u" || args[i] == "--username" 
     {
@@ -135,12 +141,18 @@ fn main()
   let episodes = api_response["data"]["User"]["statistics"]["anime"]["episodesWatched"].as_i64().unwrap(); //or as_f64 if I wanted a float.
   let username = api_response["data"]["User"]["name"].to_string();
   let username = username.replace('"', ""); //remove " from string
+  let avatar_url = api_response["data"]["User"]["avatar"]["large"].to_string();
+  let avatar_url = avatar_url.replace('"', ""); //remove " from string
 
   // perform calculation
   let hours = minutes / 60;
 
   // print to screen
   if verbosity == Verbosity::All
+  {
+    frontend::main(avatar_url, username, hours, minutes, episodes).expect("Could not run pretty_print");
+  }
+  else if verbosity == Verbosity::Text
   {
     println!("{} watched {} episodes making for a total of {} hours ({} minutes).", username, episodes, hours, minutes);
     if !close_automatically

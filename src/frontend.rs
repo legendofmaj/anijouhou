@@ -2,6 +2,7 @@ use image::DynamicImage;
 use terminal_size::{Width, Height, terminal_size};
 use viuer::{print, Config};
 use colored::{ColoredString, Colorize};
+use image::ImageReader;
 
 fn configuration(column_size: u16, username: String, watchtime_hours: i64 , watchtime_minutes: i64, episodes: i64) {
     // print text on the right
@@ -12,13 +13,8 @@ fn configuration(column_size: u16, username: String, watchtime_hours: i64 , watc
     print_in_second_column_themed(column_size, "󰆙", episodes.to_string(), "episodes");
 }
 
-pub fn main(avatar_url: String, username: String, watchtime_hours: i64 , watchtime_minutes: i64, episodes: i64) -> Result<(), Box<dyn std::error::Error>> {  
-  // get image from url
-  // thanks to https://www.reddit.com/r/rust/comments/g2zeps/how_do_i_get_an_image_from_a_url/
-  let img_bytes = reqwest::blocking::get(avatar_url)?
-      .bytes()?;
-    
-  let image = image::load_from_memory(&img_bytes)?;
+pub fn main(profile_picture_path: String, username: String, watchtime_hours: i64 , watchtime_minutes: i64, episodes: i64) -> Result<(), Box<dyn std::error::Error>> {
+  let profile_picture = ImageReader::open(profile_picture_path)?.decode()?;
 
   let size: Option<(Width, Height)> = terminal_size();
     
@@ -33,7 +29,7 @@ pub fn main(avatar_url: String, username: String, watchtime_hours: i64 , watchti
       configuration(column_size, username, watchtime_hours, watchtime_minutes, episodes);
       
       // print image on the left
-      print_image(image_size, image);
+      print_image(image_size, profile_picture);
   }
   Ok(())
 }

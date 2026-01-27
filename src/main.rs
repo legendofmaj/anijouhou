@@ -10,7 +10,7 @@ fn main()
 
   if cfg!(target_os = "windows")
   {
-    user_data_folder = std::env::var("APPDATA").expect("No APP_DATA directory present.") + r"\anijouhou\";
+    user_data_folder = std::env::var("APDATA").expect("No APP_DATA directory present.") + r"\anijouhou\";
   }
   else
   {
@@ -19,6 +19,7 @@ fn main()
   
   let config_path = user_data_folder.clone() + "config.conf";
   let cache_path: String = user_data_folder.clone() + "cache.conf";
+  let profile_picture_path: String = user_data_folder.clone() + "profile_picture.png";
 
   #[derive(Eq, PartialEq)]
   enum Verbosity 
@@ -51,6 +52,7 @@ fn main()
     {
       println!("Clearing cache");
       std::fs::remove_file(cache_path.clone()).expect("Cache directory can not be deleted.");
+      std::fs::remove_file(profile_picture_path.clone()).expect("Cached profile picture could not be deleted");
       std::process::exit(0);
     }
     else if args[i] == "-h" || args[i] == "--hours"
@@ -144,13 +146,19 @@ fn main()
   let avatar_url = api_response["data"]["User"]["avatar"]["large"].to_string();
   let avatar_url = avatar_url.replace('"', ""); //remove " from string
 
+  // cache profile picture
+  if !std::path::Path::new(&profile_picture_path).exists() 
+  {
+    api::cache_profile_picture(avatar_url.clone(), profile_picture_path.clone()).expect("Could not cache profile picture.");
+  }
+  
   // perform calculation
   let hours = minutes / 60;
 
   // print to screen
   if verbosity == Verbosity::All
   {
-    frontend::main(avatar_url, username, hours, minutes, episodes).expect("Could not run pretty_print");
+    frontend::main(profile_picture_path, username, hours, minutes, episodes).expect("Could not run pretty_print.");
   }
   else if verbosity == Verbosity::Text
   {

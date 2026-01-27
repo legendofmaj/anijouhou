@@ -64,3 +64,16 @@ pub async fn request(username: String, access_token: String) -> serde_json::Valu
     let result: serde_json::Value = serde_json::from_str(&resp.unwrap()).unwrap();
     return result;
 }
+
+pub fn cache_profile_picture(avatar_url: String, profile_picture_path: String) -> Result<(), Box<dyn std::error::Error>> {
+  // get image from url via reqwest
+  // thanks to https://www.reddit.com/r/rust/comments/g2zeps/how_do_i_get_an_image_from_a_url/
+  let img_bytes = reqwest::blocking::get(avatar_url)?
+      .bytes()?;
+
+  // save that image to disk
+  let image_path = std::path::Path::new(&profile_picture_path);
+  image::load_from_memory(&img_bytes)?.save(image_path).ok();
+
+  Ok(())
+}

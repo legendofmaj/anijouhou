@@ -170,15 +170,15 @@ fn main()
   }
   else if verbosity == Verbosity::Hours
   {
-    println!("{} hours", hours);
+    println!("{}", hours);
   }
   else if verbosity == Verbosity::Episodes
   {
-    println!("{} episodes", episodes);
+    println!("{}", episodes);
   }
   else if verbosity == Verbosity::Minutes
   {
-    println!("{} minutes", minutes);
+    println!("{}", minutes);
   }
   
 }

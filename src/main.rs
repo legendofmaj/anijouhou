@@ -10,7 +10,7 @@ fn main()
 
   if cfg!(target_os = "windows")
   {
-    user_data_folder = std::env::var("APDATA").expect("No APP_DATA directory present.") + r"\anijouhou\";
+    user_data_folder = std::env::var("APPDATA").expect("No APP_DATA directory present.") + r"\anijouhou\";
   }
   else
   {

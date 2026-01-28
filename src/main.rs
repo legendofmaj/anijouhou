@@ -158,7 +158,8 @@ fn main()
   // print to screen
   if verbosity == Verbosity::All
   {
-    frontend::main(profile_picture_path, username, hours, minutes, episodes).expect("Could not run pretty_print.");
+    //TODO: this needs to be in a config
+    frontend::main(profile_picture_path, username, hours, minutes, episodes, 0.8).expect("Could not run pretty_print.");
   }
   else if verbosity == Verbosity::Text
   {

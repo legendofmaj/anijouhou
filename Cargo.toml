@@ -5,9 +5,9 @@ version = "0.4.0"
 edition = "2024"
 
 [dependencies]
-serde_json = "1.0"
+serde_json = "1.0.149"
 reqwest = { version = "0.13.1", features = ["blocking"] }
-tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.49.0", features = ["macros", "rt-multi-thread"] }
 terminal_size = "0.4.3"
 viuer = { version = "0.11.0", features = ["print-file"] }
 image = "0.25.9"

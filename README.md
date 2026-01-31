@@ -1,5 +1,9 @@
 # About
-anijouhou (アニメ情報) is a terminal application that displays the total amount of time spent watching anime by fetching data from [anilist](https://anilist.co/).
+Anijouhou (from Japanese アニメ情報 = anime information) is an [AniList](https://anilist.co/) profile statistics viewer for the terminal.
+
+<a href="https://codeberg.org/legendofmaj/anijouhou/src/branch/main/LICENSE"> <img alt="GPLv3 License" src="https://img.shields.io/badge/License-GPLv3-blue?style=flat-square&label=License&labelColor=%23dce0e8&color=%23d20f39" height="25"/></a>
+<a href="https://codeberg.org/legendofmaj/anijouhou"> <img alt="language used" src="https://img.shields.io/badge/dynamic/json.svg?style=flat-square&color=%23dc8a78&labelColor=%23dce0e8&label=Language&url=https://codeberg.org/api/v1/repos/legendofmaj/anijouhou&query=language" height="25"></a>
+<a href="https://codeberg.org/legendofmaj/dotfiles"> <img alt="hosted on Codeberg" src="https://img.shields.io/badge/Repo-Codeberg-blue?style=flat-square&label=Repo&labelColor=%23dce0e8&color=%2304a5e5" height="25"></a>
 
 # Screenshots
 | [anijouhou](https://github.com/legendofmaj/anijouhou/releases) | [anijouhou with fastfetch](https://github.com/fastfetch-cli/fastfetch) |
@@ -7,33 +11,15 @@ anijouhou (アニメ情報) is a terminal application that displays the total am
 | <img src="res/anijouhou.png" width="500"/>                     | <img src="res/fastfetch_anijouhou.png" width="500"/>                   |
 
 # Installation
-## via cargo
 ```bash
-cargo install --git "https://github.com/legendofmaj/anijouhou.git"
+cargo install --git "https://codeberg.org/legendofmaj/anijouhou.git"
 ```
-
-## via precompiled binaries
-Download the binaries either from the [release page](https://github.com/legendofmaj/anijouhou/releases) or to get the latest development version from [GitHub actions](https://github.com/legendofmaj/anijouhou/actions).
-
-In order to launch anijouhou from your terminal emulator you will need to copy the binary to a directory in your path. If you don't need that, you can skip the following steps.
-### On Linux
-```bash
-sudo cp anijouhou /usr/bin/
-```
-### On Windows
-- make sure a bin directory is present e.g.: `C:\Users\YourUsername\bin\` (If not, create one)
-- move `anijouhou.exe` to the directory
-- add your bin directory to PATH:
-  - open settings
-  - search for path and choose `edit the system environment variables`
-  - click on `environment variables`
-  - choose `path` and click `edit`
-  - choose `new` and add your bin directory
-  - click ok to all the close dialogues
-- launch the app with `anijouhou` in any terminal
+>[!Note]
+> Alternatively you can also install anijouhou via precompiled binaries. <br>
+> These instructions can be found [here](docs/installation_from_precompiled_binaries.md).
 
 # Build from source
-Clone the repository and go into the directory.
+Clone the repository and open the directory.
 ```bash
 git clone https://github.com/legendofmaj/anijouhou.git && cd anijouhou
 ```
@@ -43,7 +29,7 @@ cargo build --release
 ```
 Copy the binary to a directory in your PATH.
 ```bash
-cp target/release/anijouhou $HOME/.cargo/bin/
+sudo cp target/release/anijouhou /usr/bin/
 ```
 
 # Usage
@@ -51,7 +37,7 @@ cp target/release/anijouhou $HOME/.cargo/bin/
 ```bash
 anijouhou <username>
 ```
-If you want to get information about the same profile again, you can omit `<username>`.
+>[!TIP] If you want to get information about the same profile again, you can omit `<username>`.
 
 ## File management
 Clear cache (automatically cleared daily): 
@@ -60,41 +46,32 @@ anijouhou -c
 # or
 anijouhou --clear-cache
 ```
-Delete user data directory (`$HOME/.config/anijouhou/` or `%APPDATA%\anijouhou\`): 
+Delete user data directory (`~/.config/anijouhou/` or `%APPDATA%\anijouhou\`): 
 ```bash
 anijouhou -d 
 # or
 anijouhou --delete
 ```
 ## Output formatting
-Get total watchtime in:
 ```bash
+anijouhou -t # text only
 anijouhou -h # hours
 anijouhou -m # minutes
 anijouhou -e # episodes
 ```
 Or alternatively:
 ```bash
+anijouhou --text
 anijouhou --hours
 anijouhou --minutes
 anijouhou --episodes
 ```
 ## Supplying user data via command line arguments
->[!TIP]
-> If no flag is passed, but an argument, anijouhou assumes since  `v0.3.5` that the argument is a username of a public user.
-> This means that `anijouhou -u <your-username> -k skip` is equivalent to `anijouhou <your-username>`.
-
-Give username via command line argument:
-```bash
-anijouhou -u <your-username> 
-# or 
-anijouhou --username <your-username>
-```
 Give api key via command line argument: 
 ```bash
-anijouhou -k <api-key> 
-# or 
-anijouhou --api-key <api-key>
+anijouhou <username> -k <api-key>
+# or
+anijouhou <username> --api-key <api-key>
 ```
 >[!Important]
 > If you give `skip` as the api key, none will be used.
@@ -107,6 +84,43 @@ On Windows the terminal will stay open when starting `anijouhou.exe`. To prevent
 On Linux the behavior is the opposite. If you would want anijouhou to stay open (e.g. when starting it via a `.desktop` file) use:
 ```bash
 ./anijouhou --automatically-close
+```
+
+# Configuration
+The look of anijouhou can be customized via a configuration file located at `~/.config/anijouhou/config.toml`. <br>
+A default configuration will be created when the application is first run. <br>
+The structure of this file is as follows:
+```toml
+# Changes the size of the profile picture and spacing between profile picture and text.
+scaling_factor = 0.8
+# You can add as many modules as you like, however they will be cut off once they take up more space than your profile picture.
+[[modules]]
+# Valid values are: `username`, `watchtime_hours`, `watchtime_minutes` and `episodes`.
+# Everything else will be regarded as a normal string.
+value = "username"
+value_bold = true
+[[modules]]
+icon = "--------------"
+icon_bold = false
+[[modules]]
+# `value` and `unit` also have `value.bold` / `unit_color` options.
+icon = "󰦖 "
+icon_color = "#1e66f5"
+icon_bold = false
+value = "watchtime_hours"
+unit = " hours"
+[[modules]]
+icon = " "
+icon_color = "#1e66f5"
+icon_bold = false
+value = "watchtime_minutes"
+unit = " minutes"
+[[modules]]
+icon = "󰻏 "
+icon_color = "#1e66f5"
+icon_bold = false
+value = "episodes"
+unit = " episodes"
 ```
 
 # Tips and tricks

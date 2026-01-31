@@ -2,17 +2,17 @@ name: build for linux
 
 on:
   push:
-    branches: ['main']
     paths-ignore:
       - '**.md'
       - '**.png'
       - '.gitignore'
+      - 'LICENSE'
   pull_request:
-    branches: ['main']
     paths-ignore:
       - '**.md'
       - '**.png'
       - '.gitignore'
+      - 'LICENSE'
   workflow_dispatch:
 
 env:

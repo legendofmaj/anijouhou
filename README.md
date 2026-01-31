@@ -1,7 +1,7 @@
 # About
 Anijouhou (from Japanese アニメ情報 = anime information) is an [AniList](https://anilist.co/) profile statistics viewer for the terminal.
 
-<a href="https://codeberg.org/legendofmaj/anijouhou/src/branch/main/LICENSE"> <img alt="GPLv3 License" src="https://img.shields.io/badge/License-GPLv3-blue?style=flat-square&label=License&labelColor=%23dce0e8&color=%23d20f39" height="25"/></a>
+<a href="#license"> <img alt="GPLv3 / MPLv2 dual License" src="https://img.shields.io/badge/License-GPLv3/MPLv2-blue?style=flat-square&label=License&labelColor=%23dce0e8&color=%23d20f39" height="25"/></a>
 <a href="https://codeberg.org/legendofmaj/anijouhou"> <img alt="language used" src="https://img.shields.io/badge/dynamic/json.svg?style=flat-square&color=%23dc8a78&labelColor=%23dce0e8&label=Language&url=https://codeberg.org/api/v1/repos/legendofmaj/anijouhou&query=language" height="25"></a>
 <a href="https://codeberg.org/legendofmaj/anijouhou"> <img alt="hosted on Codeberg" src="https://img.shields.io/badge/Repo-Codeberg-blue?style=flat-square&label=Repo&labelColor=%23dce0e8&color=%2304a5e5" height="25"></a>
 
@@ -165,3 +165,20 @@ Install anijouhou
 ```bash
 cargo install --git "https://github.com/legendofmaj/anijouhou.git"
 ```
+
+# Credits
+This project would not have been possible without the following amazing libraries: <br>
+- [serde](https://github.com/serde-rs/serde) copyright [serde-rs](https://github.com/serde-rs) licensed under the [MIT](https://github.com/serde-rs/json/blob/master/LICENSE-MIT)
+- [serde_json](https://github.com/dtolnay/serde-json) copyright [serde-rs](https://github.com/serde-rs) licensed under the [MIT](https://github.com/serde-rs/serde/blob/master/LICENSE-MIT)
+- [reqwest](https://github.com/seanmonstar/reqwest) copyright [Sean McArthur](https://github.com/seanmonstar) licensed under the [MIT](https://github.com/seanmonstar/reqwest/blob/master/LICENSE-MIT)
+- [tokio](https://github.com/tokio-rs/tokio) copyright the [Tokio Contributors](https://github.com/tokio-rs/tokio/graphs/contributors) licensed under the [MIT](https://github.com/tokio-rs/tokio/blob/master/LICENSE).
+- [terminal_size](https://github.com/eminence/terminal-size) copyright [The terminal-size Developers](https://github.com/eminence/terminal-size/graphs/contributors) licensed under the [MIT](https://github.com/eminence/terminal-size/blob/master/LICENSE-MIT)
+- [viuer](https://github.com/atanunq/viuer/) copyright [Atanas Yankov](https://github.com/atanunq) licensed under the [MIT](https://github.com/atanunq/viuer/blob/master/LICENSE-MIT)
+- [image](https://github.com/image-rs/image/) copyright [image-rs](https://github.com/image-rs/) licensed under the [MIT](https://github.com/image-rs/image/blob/main/LICENSE-MIT)
+- [open](https://github.com/Byron/open-rs/) copyright [Sebastian Thiel](https://github.com/Byron) licensed under the [MIT](https://github.com/Byron/open-rs/blob/main/LICENSE.md)
+- [chrono](https://github.com/chronotope/chrono) copyright [Kang Seonghoon and contributors](https://github.com/chronotope/chrono/graphs/contributors) licensed under the [MIT](https://github.com/chronotope/chrono/blob/main/LICENSE.txt)
+- [colored](https://github.com/colored-rs/colored/) licensed under the [MPL-2.0](https://github.com/colored-rs/colored?tab=MPL-2.0-1-ov-file)
+- [toml](https://github.com/toml-rs/toml/) copyright [Individual contributors](https://github.com/toml-rs/toml/graphs/contributors) licensed under the [MIT](https://github.com/toml-rs/toml/blob/main/LICENSE-MIT)
+
+# License
+As per requirement of the MPLv2 licensed [colored-crate](https://github.com/colored-rs/colored/) this project is dual-licensed under the [MPLv2](LICENSE-MPL) and [GPLv3](LICENSE).

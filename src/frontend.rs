@@ -16,10 +16,6 @@ fn configuration(column_size: u16, username: String, watchtime_hours: i64 , watc
     print_in_second_column_themed(column_size, "Debug: ", "This module has not been completed yet".to_string(), "");
     print_in_second_column_themed(column_size, "Debug: ", "This module has not been completed yet".to_string(), "");
     print_in_second_column_themed(column_size, "Debug: ", "This module has not been completed yet".to_string(), "");
-
-    print_in_second_column_themed(column_size, "Debug: ", "This module has not been completed yet".to_string(), "");
-    print_in_second_column_themed(column_size, "Debug: ", "This module has not been completed yet".to_string(), "");
-    print_in_second_column_themed(column_size, "Debug: ", "This module has not been completed yet".to_string(), "");
 }
 
 pub fn main(profile_picture_path: String, username: String, watchtime_hours: i64 , watchtime_minutes: i64, episodes: i64, scaling_factor: f64) -> Result<(), Box<dyn std::error::Error>> {

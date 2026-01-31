@@ -17,7 +17,7 @@ fn main()
     user_data_folder = std::env::var("HOME").expect("No $HOME directory present.") + "/.config/anijouhou/";
   }
   
-  let config_path = user_data_folder.clone() + "config.conf";
+  let config_path = user_data_folder.clone() + "credentials.conf";
   let cache_path: String = user_data_folder.clone() + "cache.conf";
   let profile_picture_path: String = user_data_folder.clone() + "profile_picture.png";
 

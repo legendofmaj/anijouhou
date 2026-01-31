@@ -10,7 +10,7 @@ pub fn write_cache(result: String, cache_path: String)
   // write current data to cache
   let today = Local::now().date_naive().to_string();
   // write result to file
-  std::fs::write(cache_path, today + "\n" + &result).expect("Could not write api response to cache.")
+  std::fs::write(cache_path, today + "\n" + &result).expect("Could not write api response to cache.");
 }
 
 

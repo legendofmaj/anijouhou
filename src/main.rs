@@ -20,6 +20,7 @@ fn main()
   let config_path = user_data_folder.clone() + "credentials.conf";
   let cache_path: String = user_data_folder.clone() + "cache.conf";
   let profile_picture_path: String = user_data_folder.clone() + "profile_picture.png";
+  let frontend_config_path: String = user_data_folder.clone() + "config.toml";
 
   #[derive(Eq, PartialEq)]
   enum Verbosity 
@@ -158,8 +159,7 @@ fn main()
   // print to screen
   if verbosity == Verbosity::All
   {
-    //TODO: this needs to be in a config
-    frontend::main(profile_picture_path, username, hours, minutes, episodes, 0.8).expect("Could not run pretty_print.");
+    frontend::main(profile_picture_path, username, hours, minutes, episodes, frontend_config_path).expect("Could not run frontend.");
   }
   else if verbosity == Verbosity::Text
   {

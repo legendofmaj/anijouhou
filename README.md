@@ -3,7 +3,7 @@ Anijouhou (from Japanese アニメ情報 = anime information) is an [AniList](ht
 
 <a href="https://codeberg.org/legendofmaj/anijouhou/src/branch/main/LICENSE"> <img alt="GPLv3 License" src="https://img.shields.io/badge/License-GPLv3-blue?style=flat-square&label=License&labelColor=%23dce0e8&color=%23d20f39" height="25"/></a>
 <a href="https://codeberg.org/legendofmaj/anijouhou"> <img alt="language used" src="https://img.shields.io/badge/dynamic/json.svg?style=flat-square&color=%23dc8a78&labelColor=%23dce0e8&label=Language&url=https://codeberg.org/api/v1/repos/legendofmaj/anijouhou&query=language" height="25"></a>
-<a href="https://codeberg.org/legendofmaj/anijouhou"> <img alt="hosted on Codeberg" src="https://img.shields.io/badge/Repo-Codeberg-blue?style=flat-square&label=Hosted on&labelColor=%23dce0e8&color=%2304a5e5" height="25"></a>
+<a href="https://codeberg.org/legendofmaj/anijouhou"> <img alt="hosted on Codeberg" src="https://img.shields.io/badge/Repo-Codeberg-blue?style=flat-square&label=Repo&labelColor=%23dce0e8&color=%2304a5e5" height="25"></a>
 
 # Screenshots
 | [anijouhou](https://github.com/legendofmaj/anijouhou/releases) | [anijouhou with fastfetch](https://github.com/fastfetch-cli/fastfetch) |
@@ -37,7 +37,8 @@ sudo cp target/release/anijouhou /usr/bin/
 ```bash
 anijouhou <username>
 ```
->[!Note] If you want to get information about the same profile again, you can omit `<username>`.
+>[!Note] 
+> If you want to get information about the same profile again, you can omit `<username>`.
 
 ## File management
 Clear cache (automatically cleared daily): 

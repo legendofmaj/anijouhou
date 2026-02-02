@@ -90,13 +90,13 @@ On Linux the behavior is the opposite. If you would want anijouhou to stay open 
 # Configuration
 The look of anijouhou can be customized via a configuration file located at `~/.config/anijouhou/config.toml`. <br>
 A default configuration will be created when the application is first run. <br>
-The structure of this file is as follows:
+Below you can see the default configuration:
 ```toml
 # Changes the size of the profile picture and spacing between profile picture and text.
 scaling_factor = 0.8
 # You can add as many modules as you like, however they will be cut off once they take up more space than your profile picture.
 [[modules]]
-# Valid values are: `username`, `watchtime_hours`, `watchtime_minutes` and `episodes`.
+# Valid values are: `username`, `watchtime_hours`, `watchtime_minutes`,`episodes`, genre_1 (and 2, 3) and genre_1_hours (and 2, 3).
 # Everything else will be regarded as a normal string.
 value = "username"
 value_bold = true
@@ -122,6 +122,41 @@ icon_color = "#1e66f5"
 icon_bold = false
 value = "episodes"
 unit = " episodes"
+[[modules]]
+icon = " "
+icon_color = "#1e66f5"
+icon_bold = false
+value = "genre_1"
+# !NoNewLine means the next module will not appear on a new line
+# You can still use a normal unit. In this case use `unit = " my_unit!NoNewLine"
+unit = "!NoNewLine"
+[[modules]]
+icon = " ("
+icon_bold = false
+value = "genre_1_hours"
+unit = " hours)"
+[[modules]]
+icon = "󰲣 "
+icon_color = "#1e66f5"
+icon_bold = false
+value = "genre_2"
+unit = "!NoNewLine"
+[[modules]]
+icon = " ("
+icon_bold = false
+value = "genre_2_hours"
+unit = " hours)"
+[[modules]]
+icon = "󰲥 "
+icon_color = "#1e66f5"
+icon_bold = false
+value = "genre_3"
+unit = "!NoNewLine"
+[[modules]]
+icon = " ("
+icon_bold = false
+value = "genre_3_hours"
+unit = " hours)"
 ```
 
 # Tips and tricks

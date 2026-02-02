@@ -10,6 +10,10 @@ query ($name: String) {
       anime {
         episodesWatched
         minutesWatched
+        genres(limit: 3) {
+          genre
+          minutesWatched
+        }
       }
     }
     avatar {

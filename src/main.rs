@@ -140,30 +140,34 @@ fn main()
   }
 
   // parse json
-  let minutes = api_response["data"]["User"]["statistics"]["anime"]["minutesWatched"].as_i64().unwrap(); //or as_f64 if I wanted a float.
-  let episodes = api_response["data"]["User"]["statistics"]["anime"]["episodesWatched"].as_i64().unwrap(); //or as_f64 if I wanted a float.
-  let username = api_response["data"]["User"]["name"].to_string();
-  let username = username.replace('"', ""); //remove " from string
-  let avatar_url = api_response["data"]["User"]["avatar"]["large"].to_string();
-  let avatar_url = avatar_url.replace('"', ""); //remove " from string
+  let parsed_data = cache::AniListApiResponse {
+    minutes: api_response["data"]["User"]["statistics"]["anime"]["minutesWatched"].as_i64().unwrap(), //or as_f64 if I wanted a float.
+    hours: api_response["data"]["User"]["statistics"]["anime"]["minutesWatched"].as_i64().unwrap() / 60,
+    episodes: api_response["data"]["User"]["statistics"]["anime"]["episodesWatched"].as_i64().unwrap(), //or as_f64 if I wanted a float.
+    username: api_response["data"]["User"]["name"].to_string().replace('"', ""),
+    avatar_url: api_response["data"]["User"]["avatar"]["large"].to_string().replace('"', ""),
+    genre_1: api_response["data"]["User"]["statistics"]["anime"]["genres"][0]["genre"].to_string().replace('"', ""),
+    genre_1_hours: api_response["data"]["User"]["statistics"]["anime"]["genres"][0]["minutesWatched"].as_i64().unwrap() / 60,
+    genre_2: api_response["data"]["User"]["statistics"]["anime"]["genres"][1]["genre"].to_string().replace('"', ""),
+    genre_2_hours: api_response["data"]["User"]["statistics"]["anime"]["genres"][1]["minutesWatched"].as_i64().unwrap() / 60,
+    genre_3: api_response["data"]["User"]["statistics"]["anime"]["genres"][2]["genre"].to_string().replace('"', ""),
+    genre_3_hours: api_response["data"]["User"]["statistics"]["anime"]["genres"][2]["minutesWatched"].as_i64().unwrap() / 60,
+  };
 
   // cache profile picture
   if !std::path::Path::new(&profile_picture_path).exists() 
   {
-    api::cache_profile_picture(avatar_url.clone(), profile_picture_path.clone()).expect("Could not cache profile picture.");
+    api::cache_profile_picture(parsed_data.avatar_url.clone(), profile_picture_path.clone()).expect("Could not cache profile picture.");
   }
-  
-  // perform calculation
-  let hours = minutes / 60;
 
   // print to screen
   if verbosity == Verbosity::All
   {
-    frontend::main(profile_picture_path, username, hours, minutes, episodes, frontend_config_path).expect("Could not run frontend.");
+    frontend::main(profile_picture_path, frontend_config_path, parsed_data).expect("Could not run frontend.");
   }
   else if verbosity == Verbosity::Text
   {
-    println!("{} watched {} episodes making for a total of {} hours ({} minutes).", username, episodes, hours, minutes);
+    println!("{} watched {} episodes making for a total of {} hours ({} minutes).", parsed_data.username, parsed_data.episodes, parsed_data.hours, parsed_data.minutes);
     if !close_automatically
     {
       std::io::stdin().read_line(&mut String::new()).unwrap();
@@ -171,15 +175,15 @@ fn main()
   }
   else if verbosity == Verbosity::Hours
   {
-    print!("{}", hours);
+    print!("{}", parsed_data.hours);
   }
   else if verbosity == Verbosity::Episodes
   {
-    print!("{}", episodes);
+    print!("{}", parsed_data.episodes);
   }
   else if verbosity == Verbosity::Minutes
   {
-    print!("{}", minutes);
+    print!("{}", parsed_data.minutes);
   }
   
 }

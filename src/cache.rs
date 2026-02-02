@@ -51,3 +51,17 @@ pub fn read_lines(filename: &str) -> Vec<String> {
         .map(String::from)  // make each slice into a string
         .collect()  // gather them together into a vector
 }
+
+pub struct AniListApiResponse {
+  pub minutes: i64,
+  pub hours: i64,
+  pub episodes: i64,
+  pub username: String,
+  pub avatar_url: String,
+  pub genre_1: String,
+  pub genre_1_hours: i64,
+  pub genre_2: String,
+  pub genre_2_hours: i64,
+  pub genre_3: String,
+  pub genre_3_hours: i64
+}

@@ -37,7 +37,6 @@ fn main()
   let mut api_key: String = "none".to_string();
   let mut close_automatically: bool = true;
   if cfg!(target_os = "windows"){close_automatically = false;}
-  
 
   // check for command line arguments
   let args: Vec<String> = std::env::args().collect();
@@ -115,30 +114,9 @@ fn main()
     }
   }
 
-  // get api response
-  let api_response: serde_json::Value;
-  
-  if std::path::Path::new(&cache_path).exists()
-  {
-    let file_size = std::fs::metadata(cache_path.clone()).unwrap().len();
-    if file_size == 0 // check if file is empty
-    {
-      api_response = save_user_information(user_data_folder, config_path, cache_path, username, api_key);
-    }
-    else if cache::read_cache(cache_path.clone()) == "outdated" // clear cache if it was not created today
-    {
-      api_response = save_user_information(user_data_folder, config_path, cache_path, username, api_key);
-    }
-    else 
-    {
-      api_response = serde_json::from_str(&*cache::read_cache(cache_path.clone())).expect("Couldn't read api response from cache.");
-    }
-  }
-  else
-  {
-    api_response = save_user_information(user_data_folder, config_path, cache_path, username, api_key);
-  }
 
+  // get api response either from cache or AniList server
+  let api_response = cache::read_api_response(cache_path, user_data_folder, config_path, username, api_key);
   // parse json
   let parsed_data = cache::AniListApiResponse {
     minutes: api_response["data"]["User"]["statistics"]["anime"]["minutesWatched"].as_i64().unwrap(), //or as_f64 if I wanted a float.
@@ -154,11 +132,7 @@ fn main()
     genre_3_hours: api_response["data"]["User"]["statistics"]["anime"]["genres"][2]["minutesWatched"].as_i64().unwrap() / 60,
   };
 
-  // cache profile picture
-  if !std::path::Path::new(&profile_picture_path).exists() 
-  {
-    api::cache_profile_picture(parsed_data.avatar_url.clone(), profile_picture_path.clone()).expect("Could not cache profile picture.");
-  }
+  cache::cache_profile_picture(profile_picture_path.clone(), parsed_data.avatar_url.clone());
 
   // print to screen
   if verbosity == Verbosity::All
@@ -188,28 +162,8 @@ fn main()
   
 }
 
-fn save_user_information(user_data_folder: String, config_path: String, cache_path: String, username: String, api_key: String) -> serde_json::Value
-{
-  // ask user for api_key
-  let data: Vec<String> = get_api_key(user_data_folder.clone(), config_path, username, api_key);
-  // send request and save result
-  let api_response = api::request(data[0].clone(), data[1].clone());
-  // check if the api response contains errors.
-  if api_response["data"]["User"].to_string() == "null"
-  {
-    println!("The data for this user is not available publicly. Have your set your anilist account to private?");
-    println!("Is {} the correct spelling of your username?", data[0]);
-    print!("User data will not be saved.");
-    // User data should not be saved.
-    std::fs::remove_dir_all(user_data_folder).expect("Anijouhou config directory can not be deleted.");
-    std::process::exit(404);
-  }
-  // save result locally
-  cache::write_cache(serde_json::to_string_pretty(&api_response).unwrap(), cache_path);
-  return api_response;
-}
 
-fn get_api_key(user_data_folder: String, config_path: String, mut username: String, mut api_key: String) -> Vec<String>
+fn get_user_information(user_data_folder: String, config_path: String, mut username: String, mut api_key: String) -> Vec<String>
 {
   // create folder if it doesn't exists
   if !std::path::Path::new(&user_data_folder).exists()

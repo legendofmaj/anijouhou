@@ -1,12 +1,32 @@
 # Installation via precompiled binaries
+## Download
 Download the binaries either from the [release page](https://github.com/legendofmaj/anijouhou/releases) or to get the latest development version from [GitHub actions](https://github.com/legendofmaj/anijouhou/actions).
 
-In order to launch anijouhou from your terminal emulator you will need to copy the binary to a directory in your path. If you don't need that, you can skip the following steps.
-## On Linux
+## Basic usage
+### On Linux
+Start the executable from the terminal:
+```bash
+./anijouhou
+```
+Or double click on on it from nautilus (or any other file manager).
+>[!Important]
+> If you cannot run the file, you might need to be make it executable via
+>```bash
+>chmod +x anijouhou
+> ```
+### On Windows
+Double click on the `.exe` in File Explorer.<br>
+Or from the terminal run:
+```PowerShell
+.\anijouhou.exe --automatically-close
+```
+## Run installed binaries from anywhere
+In order to launch anijouhou from any folder with your terminal emulator you will need to copy the binary to a directory in your path. If you don't need that, you can skip the following steps.
+### On Linux
 ```bash
 sudo cp anijouhou /usr/bin/
 ```
-## On Windows
+### On Windows
 - make sure a bin directory is present e.g.: `C:\Users\YourUsername\bin\` (If not, create one)
 - move `anijouhou.exe` to the directory
 - add your bin directory to PATH:

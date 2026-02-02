@@ -16,7 +16,8 @@ cargo install --git "https://codeberg.org/legendofmaj/anijouhou.git"
 ```
 >[!Note]
 > Alternatively you can also install anijouhou via precompiled binaries. <br>
-> These instructions can be found [here](docs/installation_from_precompiled_binaries.md).
+> This might be useful if you are on Windows or don't have cargo installed.
+> Installation instructions can be found [here](docs/installation_from_precompiled_binaries.md).
 
 # Build from source
 Clone the repository and open the directory.

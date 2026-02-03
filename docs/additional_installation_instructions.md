@@ -25,6 +25,7 @@ While `anijouhou` does run on Windows, it feels rather cluncky in the default Wi
 You might be better of using `anijouhou -t`, looking for a better terminal emulator that supports Windows or running it via WSL and `kitty`.
 #### Anijouhou on Windows screenshot
 <img src="https://github.com/user-attachments/assets/14690018-fe43-468b-b35d-1bf63a685b26" width="500"/>
+
 ## Run installed binaries from anywhere
 In order to launch anijouhou from any folder with your terminal emulator you will need to copy the binary to a directory in your path. If you don't need that, you can skip the following steps.
 ### On Linux

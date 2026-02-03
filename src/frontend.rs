@@ -255,7 +255,6 @@ value = "genre_3_hours"
 unit = " hours)""##;
   
   // create default config if none is present
-  println!("Debug: {}", std::path::Path::new(&frontend_config_path).exists());
   if std::path::Path::new(&frontend_config_path).exists() == false {
     std::fs::write(frontend_config_path, &toml_str).expect("Could not save default frontend configuration.");
   }

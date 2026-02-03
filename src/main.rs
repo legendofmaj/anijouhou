@@ -92,7 +92,7 @@ fn main()
         std::process::exit(1);
       }
     }
-    else if args[i] == "-a" || args[i] == "automatically-close"
+    else if args[i] == "-a" || args[i] == "--close-automatically"
     {
       close_automatically = !close_automatically;
     }
@@ -138,6 +138,10 @@ fn main()
   if verbosity == Verbosity::All
   {
     frontend::main(profile_picture_path, frontend_config_path, parsed_data).expect("Could not run frontend.");
+    if !close_automatically
+    {
+      std::io::stdin().read_line(&mut String::new()).unwrap();
+    }
   }
   else if verbosity == Verbosity::Text
   {

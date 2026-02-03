@@ -15,9 +15,7 @@ Anijouhou (from Japanese アニメ情報 = anime information) is an [AniList](ht
 cargo install --git "https://codeberg.org/legendofmaj/anijouhou.git"
 ```
 >[!Note]
-> Alternatively you can also install anijouhou via precompiled binaries. <br>
-> This might be useful if you are on Windows or don't have cargo installed.
-> Installation instructions can be found [here](docs/installation_from_precompiled_binaries.md).
+> Installation instructions for Windows, from precompiled binaries and other setup related information can be found [here](docs/additional_installation_instructions.md).
 
 # Build from source
 Clone the repository and open the directory.
@@ -81,11 +79,14 @@ anijouhou <username> --api-key <api-key>
 ## miscellaneous
 On Windows the terminal will stay open when starting `anijouhou.exe`. To prevent this behavior (e.g. when starting anijouhou from PowerShell) use:
 ```PowerShell
-.\anijouhou.exe --automatically-close
+.\anijouhou.exe --close-automatically
 ```
+>[!Tip]
+> On Windows Terminal the profile picture will only print after pressing the `CTRL`-key.
+
 On Linux the behavior is the opposite. If you would want anijouhou to stay open (e.g. when starting it via a `.desktop` file) use:
 ```bash
-./anijouhou --automatically-close
+./anijouhou --close-automatically
 ```
 
 # Configuration
@@ -192,15 +193,6 @@ chmod +x script_name.sh && ./script_name.sh
 ```
 >[!Important]
 > This script requires `bash` to be installed. It does not work on Windows, unless you use WSL.
-## Use anijouhou on Android via Termux
-Install necessary dependencies
-```bash
-pkg install rust openssl
-```
-Install anijouhou
-```bash
-cargo install --git "https://github.com/legendofmaj/anijouhou.git"
-```
 
 # Credits
 This project would not have been possible without the following amazing libraries: <br>

@@ -1,14 +1,14 @@
 # About
-Anijouhou (from Japanese アニメ情報 = anime information) is an [AniList](https://anilist.co/) profile statistics viewer for the terminal.
+Anijouhou (from Japanese: アニメ情報 = anime information) is an [AniList](https://anilist.co/) profile statistics viewer for the terminal.
 
 <a href="#license"> <img alt="GPLv3 / MPLv2 dual License" src="https://img.shields.io/badge/License-GPLv3/MPLv2-blue?style=flat-square&label=License&labelColor=%23dce0e8&color=%23d20f39" height="25"/></a>
 <a href="https://codeberg.org/legendofmaj/anijouhou"> <img alt="language used" src="https://img.shields.io/badge/dynamic/json.svg?style=flat-square&color=%23dc8a78&labelColor=%23dce0e8&label=Language&url=https://codeberg.org/api/v1/repos/legendofmaj/anijouhou&query=language" height="25"></a>
 <a href="https://codeberg.org/legendofmaj/anijouhou"> <img alt="hosted on Codeberg" src="https://img.shields.io/badge/Repo-Codeberg-blue?style=flat-square&label=Repo&labelColor=%23dce0e8&color=%2304a5e5" height="25"></a>
 
 # Screenshots
-| [anijouhou](https://github.com/legendofmaj/anijouhou/releases) | [anijouhou with fastfetch](https://github.com/fastfetch-cli/fastfetch) |
-| :-----------------------------------------------------------:  | :--------------------------------------------------------------------: |
-| <img src="res/anijouhou.png" width="500"/>                     | <img src="res/fastfetch_anijouhou.png" width="500"/>                   |
+| [anijouhou](https://codeberg.org/legendofmaj/anijouhou/releases) | [anijouhou with fastfetch](https://github.com/fastfetch-cli/fastfetch) |
+| :-------------------------------------------------------------:  | :--------------------------------------------------------------------: |
+| <img src="res/anijouhou.png" width="500"/>                       | <img src="res/fastfetch_anijouhou.png" width="500"/>                   |
 
 # Installation
 ```bash
@@ -20,7 +20,7 @@ cargo install --git "https://codeberg.org/legendofmaj/anijouhou.git"
 # Build from source
 Clone the repository and open the directory.
 ```bash
-git clone https://github.com/legendofmaj/anijouhou.git && cd anijouhou
+git clone https://codeberg.org/legendofmaj/anijouhou.git && cd anijouhou
 ```
 Build the project.
 ```bash
